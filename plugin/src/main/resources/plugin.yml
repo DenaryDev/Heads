@@ -1,0 +1,35 @@
+name: "SapphireHeads"
+version: "${version}"
+main: "io.sapphiremc.heads.HeadsPlugin"
+api-version: "1.16"
+softdepend: [ "PlaceholderAPI" ]
+author: "DenaryDev"
+provides: [ "HeadDatabase" ]
+
+commands:
+  heads:
+    aliases: [ "head", "hdb" ]
+
+permissions:
+  # Super permission
+  heads.admin:
+    description: "Admin permission to access all plugin features"
+    default: op
+    children:
+      - "heads.command.*"
+
+  # Command permissions
+  heads.command.*:
+    description: "Allows to use all commands"
+    default: op
+    children:
+      - "heads.command.open"
+      - "heads.command.reload"
+  # /heads open or /heads
+  heads.command.open:
+    description: "Allows to open heads menu"
+    default: true
+  # /heads reload
+  heads.command.reload:
+    description: "Allows to reload plugin configurations and cache"
+    default: op
