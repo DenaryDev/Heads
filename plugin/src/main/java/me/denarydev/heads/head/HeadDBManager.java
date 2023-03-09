@@ -86,7 +86,7 @@ public class HeadDBManager implements HeadsManager {
                 }
             }
         } catch (IOException ex) {
-            plugin.logError("Error fetching heads from website");
+            plugin.getLogger().severe("Error fetching heads from website");
             ex.printStackTrace();
             return;
         }
@@ -113,7 +113,7 @@ public class HeadDBManager implements HeadsManager {
         categories.put(CategoryID.OTHER, new Category(CategoryID.OTHER, customHeads.stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
 
         databaseLoaded = true;
-        HeadsPlugin.getInstance().log("Successfully loaded " + headsLoaded + " heads in " + categoriesLoaded + " categories!");
+        HeadsPlugin.getInstance().getLogger().info("Successfully loaded " + headsLoaded + " heads in " + categoriesLoaded + " categories!");
 
         final int loadTime = (int) (System.currentTimeMillis() / 1000 - startTime);
         EventManager.callDatabaseLoadEvent(loadTime);

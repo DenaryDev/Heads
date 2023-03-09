@@ -4,6 +4,7 @@ import me.denarydev.heads.api.head.Head;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,15 +13,22 @@ public class PlayerClickHeadEvent extends PlayerEvent implements Cancellable {
     private boolean cancel = false;
 
     private final Head head;
+    private final ClickType click;
 
-    public PlayerClickHeadEvent(@NotNull final Player player, @NotNull final Head head) {
+    public PlayerClickHeadEvent(@NotNull final Player player, @NotNull final Head head, @NotNull final ClickType click) {
         super(player);
         this.head = head;
+        this.click = click;
     }
 
     @NotNull
     public Head getHead() {
         return head;
+    }
+
+    @NotNull
+    public ClickType getClick() {
+        return click;
     }
 
     @Override

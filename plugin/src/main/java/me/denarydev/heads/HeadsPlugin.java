@@ -14,7 +14,6 @@ import me.denarydev.crystal.locale.MessageSender;
 import me.denarydev.heads.command.HeadsCommand;
 import me.denarydev.heads.gui.GuiManager;
 import me.denarydev.heads.head.HeadDBManager;
-import me.denarydev.heads.impl.EventManager;
 import me.denarydev.heads.impl.HeadsAPIImpl;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -50,7 +49,7 @@ public class HeadsPlugin extends JavaPlugin {
         if (!getDataFolder().exists() && !getDataFolder().mkdirs())
             return;
 
-        this.locale = new LocaleManager(this.getSLF4JLogger(), this.getDataFolder(), LoaderType.YAML, new MessageSender() {
+        this.locale = new LocaleManager(this.getSLF4JLogger(), this.getDataFolder(), LoaderType.HOCON, new MessageSender() {
             @Override
             public void sendMessage(UUID uuid, String message) {
                 final var player = Bukkit.getPlayer(uuid);
@@ -93,19 +92,7 @@ public class HeadsPlugin extends JavaPlugin {
     }
 
     public void logDebug(String s) {
-        if (Settings.main().debug) log(s);
-    }
-
-    public void log(String s) {
-        getSLF4JLogger().info(s);
-    }
-
-    public void logWarning(String s) {
-        getSLF4JLogger().warn(s);
-    }
-
-    public void logError(String s) {
-        getSLF4JLogger().error(s);
+        if (Settings.main().debug) getLogger().info("DEBUG: " + s);
     }
 
     public void runSync(Runnable task) {

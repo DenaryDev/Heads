@@ -4,13 +4,11 @@ import me.denarydev.crystal.gui.Button;
 import me.denarydev.crystal.gui.Menu;
 import me.denarydev.crystal.gui.Template;
 import me.denarydev.crystal.locale.LocaleManager;
-import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.head.Category;
 import me.denarydev.heads.impl.EventManager;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -49,8 +47,9 @@ public class GuiHeads {
                         .slot(slot)
                         .itemStack(item)
                         .action(event -> {
-                            EventManager.callPlayerClickHeadEvent(viewer, head);
-                            viewer.getInventory().addItem(item);
+                            if (!EventManager.callPlayerClickHeadEvent(viewer, head, event.getClick())) {
+                                viewer.getInventory().addItem(item);
+                            }
                         })
                         .build());
                 slot++;
