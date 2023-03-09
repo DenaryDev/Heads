@@ -1,0 +1,94 @@
+# Heads messages file
+# Generated on ${version}
+# Язык: Русский (Российская Федерация)
+
+# General messages
+general:
+  search:
+    input: "<italic>Введите поисковой запрос или /cancel для отмены."
+    searching: "<italic>Выполняю поиск по '<args>'..."
+    cancelled: "<gray>Поиск отменён."
+
+# Errors messages
+error:
+  no-permission: "<red>У вас недостаточно прав, чтобы использовать это!"
+  players-only: "<red>Эту команду могут использовать только игроки!"
+  database-not-loaded: "<red>База данных ещё не загрузилась, попробуйте позднее!"
+  plugin-not-loaded: "<red>Плагин не смог загрузиться из-за неправильной конфигурации! В консоли больше информации об этом."
+
+# Названия категорий
+category:
+  alphabet: "Алфавит"
+  animals: "Животные"
+  blocks: "Блоки"
+  decoration: "Декорации"
+  food_drinks: "Еда и напитки"
+  humans: "Люди"
+  humanoid: "Гуманоиды"
+  miscellaneous: "Разнообразное"
+  monsters: "Монстры"
+  plants: "Растения"
+  other: "Другие головы"
+  recent: "Недавно добавленное"
+  favorites: "Избранное"
+  search: "Результаты поиска"
+
+# Сообщения команд
+command:
+  generic:
+    usage: "<red>Используйте: <usage>"
+  help:
+    usage: "/<label> help для просмотра списка доступных команд."
+    header: |-
+      <light_blue>Heads <dark_gray>| <yellow>Доступные команды:
+      <gray><italic>Параметры в <> обязательны, а в [] не обязательны
+    command: "<dark_gray><bold>* <orange><usage> <gray>- <yellow><info>"
+    empty: "<red>**Кажется, у вас нет доступа к каким-либо командам**"
+  open:
+    info: "<italic>Открывает меню голов."
+    usage: "/<label>"
+  reload:
+    info: "<italic>Перезагружает конфигурацию плагина."
+    usage: "/<label> reload"
+    success: "<green>Конфигурация плагина успешно перезагружена."
+  search:
+    info: "<italic>Ищет головы по названию и тегам."
+    usage: "/<label> search <название|тег>"
+
+# Сообщения меню
+gui:
+  common:
+    item:
+      search:
+        name: "<yellow>Поиск"
+        lore:
+          - "<gray>Для поиска используйте:"
+          - "<gray>/heads search <название|тег>"
+#          - "<gray>ЛКМ, чтобы искать"
+#          - "<gray>   по названиям и тегам"
+#          - "<gray>ПКМ, чтобы искать"
+#          - "<gray>   только по названиям"
+      back:
+        name: "<red>Вернуться к категориям"
+  overview:
+    title: "Головы (<count> загружено)"
+    item:
+      category:
+        name: "<yellow><name>"
+        lore:
+          - "<gray><count> голов"
+  heads:
+    title: "<name> (<count> голов)"
+    item:
+      head:
+        name: "<blue><name>"
+        lore:
+          - "<dark_gray><category>"
+          - "<dark_gray><tags>"
+          - "<dark_gray>ID: <gray><id>"
+      page:
+        name: "<gray>Страница <page>"
+        lore:
+          - "<dark_gray><id>"
+      empty:
+        name: "<red>Пусто"

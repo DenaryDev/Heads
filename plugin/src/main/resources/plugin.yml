@@ -1,6 +1,6 @@
-name: "SapphireHeads"
+name: "SkyHeads"
 version: "${version}"
-main: "io.sapphiremc.heads.HeadsPlugin"
+main: "me.denarydev.heads.HeadsPlugin"
 api-version: "1.16"
 softdepend: [ "PlaceholderAPI" ]
 author: "DenaryDev"
@@ -12,24 +12,24 @@ commands:
 
 permissions:
   # Super permission
-  heads.admin:
+  skyheads.admin:
     description: "Admin permission to access all plugin features"
     default: op
     children:
-      - "heads.command.*"
+      - "skyheads.command.*"
 
   # Command permissions
-  heads.command.*:
+  skyheads.command.*:
     description: "Allows to use all commands"
     default: op
     children:
-      - "heads.command.open"
-      - "heads.command.reload"
+      - "skyheads.command.open"
+      - "skyheads.command.reload"
   # /heads open or /heads
-  heads.command.open:
+  skyheads.command.open:
     description: "Allows to open heads menu"
     default: true
   # /heads reload
-  heads.command.reload:
+  skyheads.command.reload:
     description: "Allows to reload plugin configurations and cache"
     default: op

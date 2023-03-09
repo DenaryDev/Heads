@@ -3,15 +3,26 @@ plugins {
     id("xyz.jpenilla.run-paper")
 }
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
-    compileOnly("me.clip:placeholderapi:2.11.2")
+    compileOnly(libs.bukkit)
+    compileOnly(libs.papi)
+
+    compileOnly(libs.lombok)
 
     implementation(project(":api"))
+    implementation(libs.bundles.crystal)
+
+    annotationProcessor(libs.lombok)
 }
 
 tasks {
     processResources {
-        filesMatching(listOf("plugin.yml", "config.yml")) {
+        filteringCharset = Charsets.UTF_8.name()
+        filesMatching("plugin.yml") {
             expand("version" to project.version)
         }
     }
@@ -20,7 +31,9 @@ tasks {
         archiveClassifier.set("")
         archiveBaseName.set(rootProject.name)
         destinationDirectory.set(rootProject.projectDir.resolve("build/libs"))
-        relocate("com.songoda.core", "io.sapphiremc.heads.core")
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        relocate("me.denarydev.crystal", "me.denarydev.heads.crystal")
+        relocate("com.songoda.core", "me.denarydev.heads.core")
         minimize()
     }
 
@@ -29,9 +42,10 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.19.2")
+        minecraftVersion("1.19.3")
+        runDirectory(rootProject.projectDir.resolve("run/"))
         if (!System.getenv("useCustomCore").isNullOrEmpty()) {
-            serverJar.set(project.projectDir.resolve("run/server.jar"))
+            serverJar(rootProject.projectDir.resolve("run/server.jar"))
         }
     }
 }
