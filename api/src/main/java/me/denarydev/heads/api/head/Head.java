@@ -7,6 +7,8 @@
  */
 package me.denarydev.heads.api.head;
 
+import org.bukkit.inventory.ItemStack;
+
 import java.util.List;
 
 /**
@@ -29,4 +31,6 @@ public interface Head {
     List<String> getTags();
 
     String getTagsString();
+
+    ItemStack getItem();
 }

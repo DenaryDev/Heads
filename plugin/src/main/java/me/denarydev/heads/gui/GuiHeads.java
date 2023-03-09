@@ -7,8 +7,10 @@ import me.denarydev.crystal.locale.LocaleManager;
 import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.head.Category;
+import me.denarydev.heads.impl.EventManager;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -42,17 +44,14 @@ public class GuiHeads {
             int rows = 6;
             final var headsOnPage = heads.stream().skip((page - 1) * (rows - 1) * 9L).limit((rows - 1) * 9L).toList();
             for (final var head : headsOnPage) {
-                final var item = ItemUtils.getCustomHead(head.getBase64());
+                final var item = head.getItem();
                 menu.button(Button.builder()
                         .slot(slot)
                         .itemStack(item)
-                        .displaynameRich(lang.getMessage("gui", "heads", "item", "head", "name").asString(),
-                                Placeholder.unparsed("name", head.getName()))
-                        .loreRich(lang.getMessage("gui", "heads", "item", "head", "lore").asList(),
-                                Placeholder.parsed("category", head.getCategory().getName()),
-                                Placeholder.unparsed("tags", head.getTagsString()),
-                                Placeholder.unparsed("id", String.valueOf(head.getId())))
-                        .action(event -> viewer.getInventory().addItem(item))
+                        .action(event -> {
+                            EventManager.callPlayerClickHeadEvent(viewer, head);
+                            viewer.getInventory().addItem(item);
+                        })
                         .build());
                 slot++;
             }

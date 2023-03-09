@@ -9,8 +9,11 @@ package me.denarydev.heads.head;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.api.head.CategoryID;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -51,5 +54,18 @@ public class Head implements me.denarydev.heads.api.head.Head {
             return builder.toString();
         }
         return "No Tags";
+    }
+
+    @Override
+    public ItemStack getItem() {
+        return ItemUtils.itemBuilder()
+                .itemStack(ItemUtils.getCustomHead(base64))
+                .displaynameRich(HeadsPlugin.getInstance().getLocale().getMessage("gui", "heads", "item", "head", "name").asString(),
+                        Placeholder.unparsed("name", name))
+                .loreRich(HeadsPlugin.getInstance().getLocale().getMessage("gui", "heads", "item", "head", "lore").asList(),
+                        Placeholder.parsed("category", getCategory().getName()),
+                        Placeholder.unparsed("tags", getTagsString()),
+                        Placeholder.unparsed("id", String.valueOf(id)))
+                .build();
     }
 }

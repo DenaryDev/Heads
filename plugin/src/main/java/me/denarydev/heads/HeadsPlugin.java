@@ -14,6 +14,7 @@ import me.denarydev.crystal.locale.MessageSender;
 import me.denarydev.heads.command.HeadsCommand;
 import me.denarydev.heads.gui.GuiManager;
 import me.denarydev.heads.head.HeadDBManager;
+import me.denarydev.heads.impl.EventManager;
 import me.denarydev.heads.impl.HeadsAPIImpl;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;

@@ -11,8 +11,12 @@ import lombok.Getter;
 import me.denarydev.crystal.locale.Pair;
 import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
+import me.denarydev.heads.Settings;
+import me.denarydev.heads.api.events.PlayerSearchHeadsEvent;
 import me.denarydev.heads.api.head.CategoryID;
 import me.denarydev.heads.api.head.HeadsManager;
+import me.denarydev.heads.impl.EventManager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -49,6 +53,7 @@ public class HeadDBManager implements HeadsManager {
 
     public void loadDatabase() {
         plugin.logDebug("Loading database...");
+        final int startTime = (int) (System.currentTimeMillis() / 1000);
         databaseLoaded = false;
         categories.clear();
         headsLoaded = 0;
@@ -109,37 +114,46 @@ public class HeadDBManager implements HeadsManager {
 
         databaseLoaded = true;
         HeadsPlugin.getInstance().log("Successfully loaded " + headsLoaded + " heads in " + categoriesLoaded + " categories!");
+
+        final int loadTime = (int) (System.currentTimeMillis() / 1000 - startTime);
+        EventManager.callDatabaseLoadEvent(loadTime);
+
         plugin.runSync(plugin.getGuiManager()::loadTemplates);
     }
 
-    public void showSearchChatPrompt(Player player, Category category, boolean namesOnly) {
-        //ChatPrompt.showPrompt(plugin, player, plugin.getLocale().getMessage(player, "general.search.input").asString(), (event ->
-        //        doSearch(player, category, event.getMessage(), namesOnly))).setOnCancel(() -> plugin.getLocale().getMessage(player, "general.search.cancelled").send(player)
-        //);
-    }
+    /*public void showSearchChatPrompt(Player player, Category category, boolean namesOnly) {
+        ChatPrompt.showPrompt(plugin, player, plugin.getLocale().getMessage(player, "general.search.input").asString(), (event ->
+                doSearch(player, category, event.getMessage(), namesOnly))).setOnCancel(() -> plugin.getLocale().getMessage(player, "general.search.cancelled").send(player)
+        );
+    }*/
 
-    public void doSearch(Player player, Category category, String args, boolean namesOnly) {
-        player.sendRichMessage(plugin.getLocale().getMessage("general", "search", "searching")
-                .placeholders(
-                        Pair.of("args", args)
-                ).asString());
+    public void doSearch(Player player, Category category, String params, boolean namesOnly) {
+        if (Settings.main().searchingMessage) {
+            player.sendRichMessage(plugin.getLocale().getMessage("general", "search", "searching")
+                    .placeholders(Pair.of("args", params))
+                    .asString());
+        }
         final var searchCategories = category != null ? List.of(category) : categories.values();
-        plugin.logDebug("Search in " + searchCategories.size() + " categories");
+        plugin.logDebug("Search heads in " + searchCategories.size() + " categories");
 
         final var foundHeads = new ArrayList<Head>();
         for (Category c : searchCategories) {
             foundHeads.addAll(c.getHeads().stream()
-                    .filter(head -> head.getName().toLowerCase().contains(args.toLowerCase()))
+                    .filter(head -> head.getName().toLowerCase().contains(params.toLowerCase()))
                     .toList());
             if (!namesOnly) {
                 foundHeads.addAll(c.getHeads().stream()
-                        .filter(head -> head.getTags().contains(args.toLowerCase()))
+                        .filter(head -> head.getTags().contains(params.toLowerCase()))
                         .toList());
             }
         }
         plugin.logDebug("Found " + foundHeads.size() + " heads");
 
-        plugin.getGuiManager().openHeads(player, new Category(CategoryID.SEARCH, foundHeads.stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
+        final var event = new PlayerSearchHeadsEvent(player, params, new Category(CategoryID.SEARCH, foundHeads.stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+
+        plugin.getGuiManager().openHeads(player, (Category) event.getResults());
     }
 
     @Override

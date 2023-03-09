@@ -49,6 +49,8 @@ public final class Settings {
         public Categories categories = new Categories();
         @Comment("Отдельное право для каждой категории")
         public boolean perCategoryPermissions = false;
+        @Comment("Отправлять сообщение о начале поиска или нет?")
+        public boolean searchingMessage = true;
 
         @ConfigSerializable
         public static class Categories {
