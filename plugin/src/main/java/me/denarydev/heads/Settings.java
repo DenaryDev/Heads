@@ -65,6 +65,8 @@ public final class Settings {
             public String monsters = "c45c11e0327035649ca0600ef938900e25fd1e38017422bc9740e4cda2cba892";
             public String plants = "158337a5285a6458543c77aa8f90c276ae537ad16a4e9af8b45733e99f4cbd";
             public String custom = "7f6f8e81330def176d2d52a59bf6af7b27d06acb75749fb1e943830d0162c945";
+            public String emptyFavorites = "43dac8bc0da4eecabace0ede5fa6ab7573f2b6209b5ac88ac50943e57d8b170a";
+            public String favorites = "9fd5f5a6cc552d237f7443f50b97b2ec033094cc08c59422b969f7a7e7048e06";
         }
     }
 

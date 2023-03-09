@@ -68,16 +68,13 @@ public final class GuiManager {
 
         var slot = 10;
         for (final var category : plugin.getHeadDBManager().getCategories().values()) {
-            if (category.getId() == CategoryID.SEARCH) continue;
-            if (Settings.main().perCategoryPermissions && !viewer.hasPermission("heads.category." + category.getId().toLower()))
+            final var categoryId = category.getId();
+            if (categoryId == CategoryID.SEARCH || categoryId == CategoryID.FAVORITES) continue;
+            if (Settings.main().perCategoryPermissions && !viewer.hasPermission("heads.category." + categoryId.toLower()))
                 continue;
 
             menu.button(Button.builder()
-                    .slot(switch (category.getId()) {
-                        case RECENT -> 37;
-                        case FAVORITES -> 38;
-                        default -> slot;
-                    })
+                    .slot(categoryId == CategoryID.RECENT ? 37 : slot)
                     .itemStack(category.getMenuItem())
                     .displaynameRich(lang.getMessage("gui", "overview", "item", "category", "name").asString(),
                             Placeholder.unparsed("name", category.getName()))
@@ -86,7 +83,7 @@ public final class GuiManager {
                     .action(event -> openHeads(viewer, category))
                     .build());
 
-            if (category.getId() != CategoryID.RECENT && category.getId() != CategoryID.FAVORITES) slot++;
+            if (categoryId != CategoryID.RECENT) slot++;
             if (slot == 17) slot = 19;
             if (slot == 26) slot = 28;
             if (slot == 35) break;
