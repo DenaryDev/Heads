@@ -11,14 +11,14 @@ import org.bukkit.event.inventory.ClickType;
 @SuppressWarnings("deprecation")
 public class EventManager {
 
-    public static void callDatabaseLoadEvent(int loadTime) {
-        HeadsPlugin.getInstance().runSync(() -> {
+    public static void callDatabaseLoadEvent(long loadTimeMs) {
+        HeadsPlugin.getInstance().sync(() -> {
             HeadsPlugin.getInstance().logDebug("Calling DatabaseLoadEvent event");
-            final var event = new DatabaseLoadEvent(loadTime);
+            final var event = new DatabaseLoadEvent(loadTimeMs);
             Bukkit.getPluginManager().callEvent(event);
 
             HeadsPlugin.getInstance().logDebug("Calling legacy DatabaseLoadEvent event");
-            final var legacyEvent = new me.arcaniax.hdb.api.DatabaseLoadEvent(loadTime);
+            final var legacyEvent = new me.arcaniax.hdb.api.DatabaseLoadEvent((int) loadTimeMs / 1000);
             Bukkit.getPluginManager().callEvent(legacyEvent);
         });
     }

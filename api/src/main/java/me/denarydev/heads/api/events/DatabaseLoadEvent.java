@@ -4,17 +4,23 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
+
 public class DatabaseLoadEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
-    private final int time;
+    private final long loadTimeMs;
 
-    public DatabaseLoadEvent(int amount) {
-        this.time = amount;
+    public DatabaseLoadEvent(long loadTimeMs) {
+        this.loadTimeMs = loadTimeMs;
     }
 
-    public int getLoadTime() {
-        return this.time;
+    public long getLoadTimeMs() {
+        return loadTimeMs;
+    }
+
+    public Duration getLoadTime() {
+        return Duration.ofMillis(loadTimeMs);
     }
 
     @Override

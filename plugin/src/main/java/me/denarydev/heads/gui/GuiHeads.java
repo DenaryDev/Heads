@@ -1,9 +1,9 @@
 package me.denarydev.heads.gui;
 
-import me.denarydev.crystal.gui.Button;
 import me.denarydev.crystal.gui.Menu;
 import me.denarydev.crystal.gui.Template;
 import me.denarydev.crystal.locale.LocaleManager;
+import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.head.Category;
 import me.denarydev.heads.impl.EventManager;
@@ -43,190 +43,163 @@ public class GuiHeads {
             final var headsOnPage = heads.stream().skip((page - 1) * (rows - 1) * 9L).limit((rows - 1) * 9L).toList();
             for (final var head : headsOnPage) {
                 final var item = head.getItem();
-                menu.button(Button.builder()
-                        .slot(slot)
-                        .itemStack(item)
-                        .action(event -> {
+                menu.item(ItemUtils.itemBuilder()
+                                .itemStack(item)
+                                .build(),
+                        event -> {
                             if (!EventManager.callPlayerClickHeadEvent(viewer, head, event.getClick())) {
                                 viewer.getInventory().addItem(item);
                             }
-                        })
-                        .build());
+                        }, slot);
                 slot++;
             }
         } else {
-            menu.button(Button.builder()
-                    .slot(22)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.STRUCTURE_VOID)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "empty", "name").asString())
-                    .build());
+                    .build(), 22);
         }
 
         int currentPageSlot = 46;
 
         if (pages - page == 0 && page - 6 >= 1) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page - 6)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page - 6))
-                    .build());
+                    .build(), event -> showPage(template, page - 6), currentPageSlot);
             currentPageSlot++;
         }
 
         if (pages - page <= 1 && page - 5 >= 1) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page - 5)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page - 5))
-                    .build());
+                    .build(), event -> showPage(template, page - 5), currentPageSlot);
             currentPageSlot++;
         }
 
         if (pages - page <= 2 && page - 4 >= 1) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page - 4)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page - 4))
-                    .build());
+                    .build(), event -> showPage(template, page - 4), currentPageSlot);
             currentPageSlot++;
         }
 
         if (page - 3 >= 1) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page - 3)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page - 3))
-                    .build());
+                    .build(), event -> showPage(template, page - 3), currentPageSlot);
             currentPageSlot++;
         }
 
         if (page - 2 >= 1) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page - 2)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page - 2))
-                    .build());
+                    .build(), event -> showPage(template, page - 2), currentPageSlot);
             currentPageSlot++;
         }
 
         if (page - 1 >= 1) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page - 1)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page - 1))
-                    .build());
+                    .build(), event -> showPage(template, page - 1), currentPageSlot);
             currentPageSlot++;
         }
 
-        menu.button(Button.builder()
-                .slot(currentPageSlot)
+        menu.item(ItemUtils.itemBuilder()
                 .type(Material.MAP)
                 .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                         Placeholder.unparsed("page", String.valueOf(page)))
                 .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                         Placeholder.parsed("id", category.getName()))
-                .build());
+                .build(), currentPageSlot);
         currentPageSlot++;
 
         if (page + 1 <= pages) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page + 1)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page + 1))
-                    .build());
+                    .build(), event -> showPage(template, page + 1), currentPageSlot);
             currentPageSlot++;
         }
 
         if (page + 2 <= pages) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page + 2)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page + 2))
-                    .build());
+                    .build(), event -> showPage(template, page + 2), currentPageSlot);
             currentPageSlot++;
         }
 
         if (page + 3 <= pages) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page + 3)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page + 3))
-                    .build());
+                    .build(), event -> showPage(template, page + 3), currentPageSlot);
             currentPageSlot++;
         }
 
         if (page + 4 <= pages && currentPageSlot < 53) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page + 4)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page + 4))
-                    .build());
+                    .build(), event -> showPage(template, page + 4), currentPageSlot);
             currentPageSlot++;
         }
 
         if (page + 5 <= pages && currentPageSlot < 53) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page + 5)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page + 5))
-                    .build());
+                    .build(), event -> showPage(template, page + 5), currentPageSlot);
             currentPageSlot++;
         }
 
         if (page + 6 <= pages && currentPageSlot < 53) {
-            menu.button(Button.builder()
-                    .slot(currentPageSlot)
+            menu.item(ItemUtils.itemBuilder()
                     .type(Material.PAPER)
                     .displaynameRich(lang.getMessage("gui", "heads", "item", "page", "name").asString(),
                             Placeholder.unparsed("page", String.valueOf(page + 6)))
                     .loreRich(lang.getMessage("gui", "heads", "item", "page", "lore").asList(),
                             Placeholder.parsed("id", category.getName()))
-                    .action(event -> showPage(template, page + 6))
-                    .build());
+                    .build(), event -> showPage(template, page + 6), currentPageSlot);
         }
 
         menu.clickAction(event -> plugin.getGuiManager().openOverview(viewer), 45);

@@ -9,18 +9,11 @@ package me.denarydev.heads;
 
 import me.denarydev.crystal.config.BukkitConfigs;
 import me.denarydev.crystal.config.CrystalConfigs;
-import me.denarydev.crystal.gui.Button;
-import org.bukkit.inventory.ItemStack;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
-import org.spongepowered.configurate.serialize.SerializationException;
-import org.spongepowered.configurate.serialize.TypeSerializer;
 import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 
-import java.lang.reflect.Type;
 import java.nio.file.Path;
 
 public final class Settings {
@@ -34,7 +27,6 @@ public final class Settings {
     public static void load(Path path) throws ConfigurateException {
         final var serializers = TypeSerializerCollection.builder()
                 .registerAll(BukkitConfigs.serializers())
-                //.register(Button.class, new ButtonSerializer())
                 .build();
         main = CrystalConfigs.loadConfig(path.resolve("config.conf"), serializers, MainConfig.class, false);
     }
@@ -67,51 +59,6 @@ public final class Settings {
             public String custom = "7f6f8e81330def176d2d52a59bf6af7b27d06acb75749fb1e943830d0162c945";
             public String emptyFavorites = "43dac8bc0da4eecabace0ede5fa6ab7573f2b6209b5ac88ac50943e57d8b170a";
             public String favorites = "9fd5f5a6cc552d237f7443f50b97b2ec033094cc08c59422b969f7a7e7048e06";
-        }
-    }
-
-    public static class ButtonSerializer implements TypeSerializer<Button> {
-
-        @Override
-        public Button deserialize(Type type, ConfigurationNode node) throws SerializationException {
-            final var item = node.get(ItemStack.class);
-            if (item == null) throw new SerializationException("Item is null");
-            final var slot = node.node("slot").getString();
-            if (slot == null) throw new SerializationException("Slot is null");
-
-            int[] slots;
-            if (slot.contains(",")) {
-                final var split = slot.split(",");
-                slots = new int[split.length];
-                for (int i = 0; i < split.length; i++) {
-                    slots[i] = Integer.parseInt(split[i]);
-                }
-            } else {
-                try {
-                    slots = new int[]{Integer.parseInt(slot)};
-                } catch (NumberFormatException e) {
-                    throw new SerializationException("Slot is invalid");
-                }
-            }
-            return new Button(item, slots, null);
-        }
-
-        @Override
-        public void serialize(Type type, @Nullable Button obj, ConfigurationNode node) throws SerializationException {
-            if (obj != null) {
-                node.set(ItemStack.class, obj.item());
-                final var slots = obj.slots();
-                if (slots.length == 1) {
-                    node.node("slot").set(obj.slots()[0]);
-                } else {
-                    final var slot = new StringBuilder();
-                    for (final int i : obj.slots()) {
-                        if (slot.length() > 0) slot.append(',');
-                        slot.append(i);
-                    }
-                    node.node("slot").set(slot.toString());
-                }
-            }
         }
     }
 }

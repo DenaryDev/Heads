@@ -1,9 +1,9 @@
 package me.denarydev.heads.gui;
 
-import me.denarydev.crystal.gui.Button;
 import me.denarydev.crystal.gui.InventoryListener;
 import me.denarydev.crystal.gui.Menu;
 import me.denarydev.crystal.gui.Template;
+import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.crystal.utils.NumberUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
@@ -33,31 +33,28 @@ public final class GuiManager {
                 .titleRich(plugin.getLocale().getMessage("gui", "overview", "title").asString(),
                         Placeholder.unparsed("count", NumberUtils.formatWithSuffix(plugin.getHeadDBManager().getHeadsLoaded())))
                 .rows(6)
-                .button(Button.builder()
-                        .slots(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53)
+                .item(ItemUtils.itemBuilder()
                         .type(Material.GRAY_STAINED_GLASS_PANE)
                         .displayname(Component.empty())
-                        .build())
-                .button(Button.builder()
-                        .slot(43)
+                        .build(),
+                        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53)
+                .item(ItemUtils.itemBuilder()
                         .type(Material.COMPASS)
                         .displaynameRich(lang.getMessage("gui", "common", "item", "search", "name").asString())
                         .loreRich(lang.getMessage("gui", "common", "item", "search", "lore").asList())
-                        .build())
+                        .build(), 43)
                 .build();
         heads = Template.builder()
                 .rows(6)
-                .button(Button.builder()
-                        .slot(45)
+                .item(ItemUtils.itemBuilder()
                         .type(Material.BOOK)
                         .displaynameRich(lang.getMessage("gui", "common", "item", "back", "name").asString())
-                        .build())
-                .button(Button.builder()
-                        .slot(53)
+                        .build(), 45)
+                .item(ItemUtils.itemBuilder()
                         .type(Material.COMPASS)
                         .displaynameRich(lang.getMessage("gui", "common", "item", "search", "name").asString())
                         .loreRich(lang.getMessage("gui", "common", "item", "search", "lore").asList())
-                        .build())
+                        .build(), 53)
                 .build();
     }
 
@@ -73,15 +70,13 @@ public final class GuiManager {
             if (Settings.main().perCategoryPermissions && !viewer.hasPermission("heads.category." + categoryId.toLower()))
                 continue;
 
-            menu.button(Button.builder()
-                    .slot(categoryId == CategoryID.RECENT ? 37 : slot)
+            menu.item(ItemUtils.itemBuilder()
                     .itemStack(category.getMenuItem())
                     .displaynameRich(lang.getMessage("gui", "overview", "item", "category", "name").asString(),
                             Placeholder.unparsed("name", category.getName()))
                     .loreRich(lang.getMessage("gui", "overview", "item", "category", "lore").asList(),
                             Placeholder.unparsed("count", category.getHeadsCountFormatted()))
-                    .action(event -> openHeads(viewer, category))
-                    .build());
+                    .build(), event -> openHeads(viewer, category), categoryId == CategoryID.RECENT ? 37 : slot);
 
             if (categoryId != CategoryID.RECENT) slot++;
             if (slot == 17) slot = 19;
@@ -95,7 +90,7 @@ public final class GuiManager {
     }
 
     public void openHeads(Player viewer, Category category) {
-        plugin.runSync(() -> new GuiHeads(viewer, heads, category));
+        plugin.sync(() -> new GuiHeads(viewer, heads, category));
     }
 
     public void closeAll() {

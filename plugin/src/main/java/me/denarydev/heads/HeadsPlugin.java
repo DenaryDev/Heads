@@ -20,7 +20,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurateException;
 
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 public class HeadsPlugin extends JavaPlugin {
@@ -36,9 +38,6 @@ public class HeadsPlugin extends JavaPlugin {
     @Getter
     private HeadDBManager headDBManager;
 
-    @Getter
-    private boolean loaded = false;
-
     @Override
     public void onLoad() {
         instance = this;
@@ -53,13 +52,13 @@ public class HeadsPlugin extends JavaPlugin {
             @Override
             public void sendMessage(UUID uuid, String message) {
                 final var player = Bukkit.getPlayer(uuid);
-                if (player != null) player.sendMessage(message);
+                Objects.requireNonNullElseGet(player, Bukkit::getConsoleSender).sendRichMessage(message);
             }
 
             @Override
             public void sendMessage(UUID uuid, String... messages) {
                 final var player = Bukkit.getPlayer(uuid);
-                if (player != null) player.sendMessage(messages);
+                if (player != null) Arrays.stream(messages).forEach(msg -> Objects.requireNonNullElseGet(player, Bukkit::getConsoleSender).sendRichMessage(msg));
             }
         });
         this.guiManager = new GuiManager(this);
@@ -68,38 +67,26 @@ public class HeadsPlugin extends JavaPlugin {
         final var command = this.getCommand("heads");
         if (command != null) command.setExecutor(new HeadsCommand(this));
 
-        onReload();
-        new HeadsAPIImpl(this);
-    }
-
-    public void onReload() {
-        loaded = false;
-        guiManager.closeAll();
-
         try {
             Settings.load(getDataFolder().toPath());
             locale.load(new Locale(Settings.main().language));
             runAsync(headDBManager::loadDatabase);
-            loaded = true;
         } catch (ConfigurateException ex) {
             getSLF4JLogger().error("Failed to load configurations", ex);
         }
-    }
 
-    @Override
-    public void onDisable() {
-        loaded = false;
+        new HeadsAPIImpl(this);
     }
 
     public void logDebug(String s) {
         if (Settings.main().debug) getLogger().info("DEBUG: " + s);
     }
 
-    public void runSync(Runnable task) {
-        getServer().getScheduler().runTask(this, task);
-    }
-
     public void runAsync(Runnable task) {
         getServer().getScheduler().runTaskAsynchronously(this, task);
+    }
+
+    public void sync(Runnable task) {
+        getServer().getScheduler().runTask(this, task);
     }
 }

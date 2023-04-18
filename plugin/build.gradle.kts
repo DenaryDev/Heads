@@ -3,10 +3,6 @@ plugins {
     id("xyz.jpenilla.run-paper")
 }
 
-repositories {
-    mavenLocal()
-}
-
 dependencies {
     compileOnly(libs.bukkit)
     compileOnly(libs.papi)
@@ -42,7 +38,7 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.19.3")
+        minecraftVersion("1.19.4")
         runDirectory(rootProject.projectDir.resolve("run/"))
         if (!System.getenv("useCustomCore").isNullOrEmpty()) {
             serverJar(rootProject.projectDir.resolve("run/server.jar"))

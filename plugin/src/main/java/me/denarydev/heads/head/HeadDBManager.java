@@ -24,15 +24,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class HeadDBManager implements HeadsManager {
 
@@ -52,35 +46,37 @@ public class HeadDBManager implements HeadsManager {
     }
 
     public void loadDatabase() {
+        loadDatabase(null);
+    }
+
+    public void loadDatabase(Consumer<Long> callback) {
         plugin.logDebug("Loading database...");
-        final int startTime = (int) (System.currentTimeMillis() / 1000);
+        final long startTime = System.currentTimeMillis();
         databaseLoaded = false;
         categories.clear();
         headsLoaded = 0;
         categoriesLoaded = 0;
 
-        Map<String, List<Head>> readContent = new TreeMap<>();
+        final Map<String, List<Head>> readContent = new TreeMap<>();
         try {
-            plugin.logDebug("Fetching heads from minecraft-heads.com website");
-            String headDBUrl = "https://minecraft-heads.4lima.de/csv/2022-02-25-ZgFDreHnLiGvHdf3RFfgg/Custom-Head-DB.csv";
-            URL url = new URL(headDBUrl);
-            URLConnection connection = url.openConnection();
+            plugin.logDebug("Fetching heads from website");
+            final var url = new URL("https://minecraft-heads.4lima.de/csv/2022-02-25-ZgFDreHnLiGvHdf3RFfgg/Custom-Head-DB.csv");
+            final var connection = url.openConnection();
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+            try (final var reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    String[] values = line.split(";");
-                    String category = values[0];
-                    Head head = new Head(CategoryID.getCategoryID(values[0]), Integer.parseInt(values[1]), values[2].replace("\"", ""), values[3], Integer.valueOf(values[4]).equals(1), values.length == 5 ? Collections.emptyList() : List.of(values[5].replace("\"", "").toLowerCase().split("\\|")));
+                    final String[] values = line.split(";");
+                    final String category = values[0];
+                    final var head = new Head(CategoryID.getCategoryID(values[0]), Integer.parseInt(values[1]),
+                            values[2].replace("\"", ""), values[3], Integer.parseInt(values[4]) == 1,
+                            values.length == 5 ? Collections.emptyList() : List.of(values[5].replace("\"", "").toLowerCase().split("\\|"))
+                    );
 
-                    List<Head> heads = new ArrayList<>();
-                    if (!readContent.containsKey(category)) {
-                        heads.add(head);
-                    } else {
-                        heads = new ArrayList<>(readContent.get(category));
-                        heads.add(head);
-                        readContent.remove(category);
-                    }
+                    final List<Head> heads = new ArrayList<>();
+                    if (readContent.containsKey(category))
+                        heads.addAll(readContent.get(category));
+                    heads.add(head);
                     readContent.put(category, heads);
                     headsLoaded++;
                 }
@@ -88,16 +84,17 @@ public class HeadDBManager implements HeadsManager {
         } catch (IOException ex) {
             plugin.getLogger().severe("Error fetching heads from website");
             ex.printStackTrace();
+            if (callback != null) plugin.sync(() -> callback.accept(-1L));
             return;
         }
 
-        List<Head> customHeads = new ArrayList<>();
+        final List<Head> customHeads = new ArrayList<>();
         plugin.logDebug("Loading categories...");
-        for (Map.Entry<String, List<Head>> entry : readContent.entrySet()) {
-            CategoryID id = CategoryID.getCategoryID(entry.getKey());
+        for (final var entry : readContent.entrySet()) {
+            final var id = CategoryID.getCategoryID(entry.getKey());
 
             if (id.equals(CategoryID.OTHER)) {
-                customHeads = entry.getValue();
+                customHeads.addAll(entry.getValue());
                 continue;
             }
             categories.put(id, new Category(id, entry.getValue().stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
@@ -105,7 +102,7 @@ public class HeadDBManager implements HeadsManager {
         }
 
         final var recentHeads = new ArrayList<Head>();
-        for (Category category : categories.values()) {
+        for (final var category : categories.values()) {
             recentHeads.addAll(category.getHeads().stream().filter(Head::isRecent).toList());
         }
         categories.put(CategoryID.RECENT, new Category(CategoryID.RECENT, recentHeads.stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
@@ -113,12 +110,13 @@ public class HeadDBManager implements HeadsManager {
         categories.put(CategoryID.OTHER, new Category(CategoryID.OTHER, customHeads.stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
 
         databaseLoaded = true;
-        HeadsPlugin.getInstance().getLogger().info("Successfully loaded " + headsLoaded + " heads in " + categoriesLoaded + " categories!");
 
-        final int loadTime = (int) (System.currentTimeMillis() / 1000 - startTime);
+        final long loadTime = System.currentTimeMillis() - startTime;
         EventManager.callDatabaseLoadEvent(loadTime);
+        if (callback != null) plugin.sync(() -> callback.accept(loadTime));
+        plugin.getLogger().info("Successfully loaded " + headsLoaded + " heads with " + categoriesLoaded + " categories in %sms!".formatted(loadTime));
 
-        plugin.runSync(plugin.getGuiManager()::loadTemplates);
+        plugin.sync(plugin.getGuiManager()::loadTemplates);
     }
 
     /*public void showSearchChatPrompt(Player player, Category category, boolean namesOnly) {
@@ -168,7 +166,7 @@ public class HeadDBManager implements HeadsManager {
 
     @Override
     public ItemStack getHead(int id) {
-        Category category = categories.values().stream().filter(c -> c.getHead(id) != null).findFirst().orElse(null);
+        final var category = categories.values().stream().filter(c -> c.getHead(id) != null).findFirst().orElse(null);
         if (category != null) {
             return ItemUtils.getCustomHead(category.getHead(id).getBase64());
         }

@@ -10,7 +10,9 @@ package me.denarydev.heads.command;
 import lombok.RequiredArgsConstructor;
 import me.denarydev.crystal.locale.Pair;
 import me.denarydev.heads.HeadsPlugin;
+import me.denarydev.heads.Settings;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,6 +20,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.configurate.ConfigurateException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,24 +35,19 @@ public class HeadsCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         final var player = sender instanceof Player ? (Player) sender : null;
 
-        if (!plugin.isLoaded()) {
-            sender.sendRichMessage("error.plugin-not-loaded");
-            return true;
-        }
-
         if (args.length < 1) {
             if (!plugin.getHeadDBManager().isDatabaseLoaded()) {
-                sender.sendRichMessage("error.database-not-loaded");
+                sendMessage(sender, "error.database-not-loaded");
                 return true;
             }
             if (sender.hasPermission("skyheads.command.open")) {
                 if (player != null) {
                     plugin.getGuiManager().openOverview(player);
                 } else {
-                    sender.sendRichMessage("error.players-only");
+                    sendMessage(sender, "error.players-only");
                 }
             } else {
-                sender.sendRichMessage("error.no-permission");
+                sendMessage(sender, "error.no-permission");
             }
             return true;
         }
@@ -58,10 +56,24 @@ public class HeadsCommand implements CommandExecutor, TabCompleter {
             case "reload" -> {
                 if (args.length == 1) {
                     if (sender.hasPermission("skyheads.command.reload")) {
-                        plugin.onReload();
-                        sender.sendRichMessage("command.reload.success");
+                        plugin.getGuiManager().closeAll();
+
+                        try {
+                            Settings.load(plugin.getDataFolder().toPath());
+                            plugin.getLocale().load(new Locale(Settings.main().language));
+                            plugin.runAsync(() -> plugin.getHeadDBManager().loadDatabase(loadTime -> {
+                                if (loadTime > 0L) {
+                                    sendMessage(sender, "command.reload.database.success", Placeholder.unparsed("time", String.valueOf(loadTime)));
+                                } else {
+                                    sendMessage(sender, "command.reload.database.failed");
+                                }
+                            }));
+                        } catch (ConfigurateException ex) {
+                            plugin.getSLF4JLogger().error("Failed to load configurations", ex);
+                        }
+                        sendMessage(sender, "command.reload.success");
                     } else {
-                        sender.sendRichMessage("error.no-permission");
+                        sendMessage(sender, "error.no-permission");
                     }
                 } else {
                     usage(sender, label, "reload");
@@ -75,10 +87,10 @@ public class HeadsCommand implements CommandExecutor, TabCompleter {
                             System.arraycopy(args, 1, searchArgs, 0, args.length - 1);
                             plugin.getHeadDBManager().doSearch(player, null, String.join(" ", searchArgs), false);
                         } else {
-                            plugin.getLocale().getMessage("error.players-only");
+                            sendMessage(sender, "error.players-only");
                         }
                     } else {
-                        sender.sendRichMessage("error.no-permission");
+                        sendMessage(sender, "error.no-permission");
                     }
                 } else {
                     usage(sender, label, "search");
@@ -91,11 +103,17 @@ public class HeadsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private void sendMessage(CommandSender sender, String path, TagResolver... tags) {
+        sender.sendMessage(HeadsPlugin.MINI_MESSAGE.deserialize(plugin.getLocale().getMessage(path).asString(), tags));
+    }
+
     private void usage(CommandSender sender, String label, String s) {
-        sender.sendMessage(HeadsPlugin.MINI_MESSAGE.deserialize(
-                plugin.getLocale().getMessage("command.generic.usage").asString(),
-                Placeholder.unparsed("label", label),
-                Placeholder.parsed("usage", plugin.getLocale().getMessage("command", s, "usage").asString()))
+        sender.sendRichMessage(plugin.getLocale().getMessage("command.generic.usage")
+                .placeholders(
+                        Pair.of("label", label),
+                        Pair.of("usage", plugin.getLocale().getMessage("command", s, "usage").asString())
+                )
+                .asString()
         );
     }
 

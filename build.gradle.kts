@@ -1,14 +1,14 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "8.1.0" apply false
+    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
     id("xyz.jpenilla.run-paper") version "2.0.1" apply false
 }
 
 allprojects {
     apply(plugin = "java-library")
     group = "me.denarydev.heads"
-    version = "1.0.0"
+    version = "1.0.1"
 
     tasks {
         withType<ProcessResources> {
@@ -35,10 +35,8 @@ subprojects {
 
     publishing {
         repositories {
-            maven {
+            maven("https://the-planet.fun/repo/snapshots/") {
                 name = "SapphireMC"
-                url = uri("http://repo.denaryworld.ru/snapshots/")
-                isAllowInsecureProtocol = true
                 credentials(PasswordCredentials::class)
             }
         }
