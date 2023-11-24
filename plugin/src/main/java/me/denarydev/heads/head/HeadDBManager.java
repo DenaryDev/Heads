@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 DenaryDev
+ * Copyright (c) 2023 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -8,7 +8,6 @@
 package me.denarydev.heads.head;
 
 import lombok.Getter;
-import me.denarydev.crystal.locale.Pair;
 import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
@@ -16,6 +15,7 @@ import me.denarydev.heads.api.events.PlayerSearchHeadsEvent;
 import me.denarydev.heads.api.head.CategoryID;
 import me.denarydev.heads.api.head.HeadsManager;
 import me.denarydev.heads.impl.EventManager;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -25,8 +25,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.BiConsumer;
 
 public class HeadDBManager implements HeadsManager {
 
@@ -49,7 +55,7 @@ public class HeadDBManager implements HeadsManager {
         loadDatabase(null);
     }
 
-    public void loadDatabase(Consumer<Long> callback) {
+    public void loadDatabase(BiConsumer<Long, Integer> callback) {
         plugin.logDebug("Loading database...");
         final long startTime = System.currentTimeMillis();
         databaseLoaded = false;
@@ -84,7 +90,7 @@ public class HeadDBManager implements HeadsManager {
         } catch (IOException ex) {
             plugin.getLogger().severe("Error fetching heads from website");
             ex.printStackTrace();
-            if (callback != null) plugin.sync(() -> callback.accept(-1L));
+            if (callback != null) plugin.sync(() -> callback.accept(-1L, 0));
             return;
         }
 
@@ -97,26 +103,26 @@ public class HeadDBManager implements HeadsManager {
                 customHeads.addAll(entry.getValue());
                 continue;
             }
-            categories.put(id, new Category(id, entry.getValue().stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
+            categories.put(id, new Category(id, entry.getValue().stream().sorted(Comparator.comparingInt(Head::id)).toList()));
             categoriesLoaded++;
         }
 
         final var recentHeads = new ArrayList<Head>();
         for (final var category : categories.values()) {
-            recentHeads.addAll(category.getHeads().stream().filter(Head::isRecent).toList());
+            recentHeads.addAll(category.getHeads().stream().filter(Head::recent).toList());
         }
-        categories.put(CategoryID.RECENT, new Category(CategoryID.RECENT, recentHeads.stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
+        categories.put(CategoryID.RECENT, new Category(CategoryID.RECENT, recentHeads.stream().sorted(Comparator.comparingInt(Head::id)).toList()));
 
-        categories.put(CategoryID.OTHER, new Category(CategoryID.OTHER, customHeads.stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
+        categories.put(CategoryID.OTHER, new Category(CategoryID.OTHER, customHeads.stream().sorted(Comparator.comparingInt(Head::id)).toList()));
 
         databaseLoaded = true;
 
         final long loadTime = System.currentTimeMillis() - startTime;
         EventManager.callDatabaseLoadEvent(loadTime);
-        if (callback != null) plugin.sync(() -> callback.accept(loadTime));
+        if (callback != null) plugin.sync(() -> callback.accept(loadTime, headsLoaded));
         plugin.getLogger().info("Successfully loaded " + headsLoaded + " heads with " + categoriesLoaded + " categories in %sms!".formatted(loadTime));
 
-        plugin.sync(plugin.getGuiManager()::loadTemplates);
+        plugin.sync(plugin.getMenuManager()::loadTemplates);
     }
 
     /*public void showSearchChatPrompt(Player player, Category category, boolean namesOnly) {
@@ -127,9 +133,7 @@ public class HeadDBManager implements HeadsManager {
 
     public void doSearch(Player player, Category category, String params, boolean namesOnly) {
         if (Settings.main().searchingMessage) {
-            player.sendRichMessage(plugin.getLocale().getMessage("general", "search", "searching")
-                    .placeholders(Pair.of("args", params))
-                    .asString());
+            player.sendRichMessage(Settings.messages().general.search.searching, Placeholder.unparsed("args", params));
         }
         final var searchCategories = category != null ? List.of(category) : categories.values();
         plugin.logDebug("Search heads in " + searchCategories.size() + " categories");
@@ -137,21 +141,21 @@ public class HeadDBManager implements HeadsManager {
         final var foundHeads = new ArrayList<Head>();
         for (Category c : searchCategories) {
             foundHeads.addAll(c.getHeads().stream()
-                    .filter(head -> head.getName().toLowerCase().contains(params.toLowerCase()))
+                    .filter(head -> head.name().toLowerCase().contains(params.toLowerCase()))
                     .toList());
             if (!namesOnly) {
                 foundHeads.addAll(c.getHeads().stream()
-                        .filter(head -> head.getTags().contains(params.toLowerCase()))
+                        .filter(head -> head.tags().contains(params.toLowerCase()))
                         .toList());
             }
         }
         plugin.logDebug("Found " + foundHeads.size() + " heads");
 
-        final var event = new PlayerSearchHeadsEvent(player, params, new Category(CategoryID.SEARCH, foundHeads.stream().sorted(Comparator.comparingInt(Head::getId)).toList()));
+        final var event = new PlayerSearchHeadsEvent(player, params, new Category(CategoryID.SEARCH, foundHeads.stream().sorted(Comparator.comparingInt(Head::id)).toList()));
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
-        plugin.getGuiManager().openHeads(player, (Category) event.getResults());
+        plugin.getMenuManager().openHeads(player, (Category) event.getResults());
     }
 
     @Override
@@ -168,7 +172,7 @@ public class HeadDBManager implements HeadsManager {
     public ItemStack getHead(int id) {
         final var category = categories.values().stream().filter(c -> c.getHead(id) != null).findFirst().orElse(null);
         if (category != null) {
-            return ItemUtils.getCustomHead(category.getHead(id).getBase64());
+            return ItemUtils.getCustomHead(category.getHead(id).base64());
         }
         return null;
     }

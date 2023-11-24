@@ -1,4 +1,11 @@
-package me.denarydev.heads.gui;
+/*
+ * Copyright (c) 2023 DenaryDev
+ *
+ * Use of this source code is governed by an MIT-style
+ * license that can be found in the LICENSE file or at
+ * https://opensource.org/licenses/MIT.
+ */
+package me.denarydev.heads.menu;
 
 import me.denarydev.crystal.gui.InventoryListener;
 import me.denarydev.crystal.gui.Menu;
@@ -9,61 +16,44 @@ import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
 import me.denarydev.heads.api.head.CategoryID;
 import me.denarydev.heads.head.Category;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-public final class GuiManager {
+public final class MenuManager {
 
     private final HeadsPlugin plugin;
 
     private Template overview;
     private Template heads;
 
-    public GuiManager(HeadsPlugin plugin) {
+    public MenuManager(HeadsPlugin plugin) {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), plugin);
     }
 
     public void loadTemplates() {
-        final var lang = HeadsPlugin.getInstance().getLocale();
         overview = Template.builder()
-                .titleRich(plugin.getLocale().getMessage("gui", "overview", "title").asString(),
+                .titleRich(Settings.menus().overview.title,
                         Placeholder.unparsed("count", NumberUtils.formatWithSuffix(plugin.getHeadDBManager().getHeadsLoaded())))
                 .rows(6)
-                .item(ItemUtils.itemBuilder()
-                        .type(Material.GRAY_STAINED_GLASS_PANE)
-                        .displayname(Component.empty())
-                        .build(),
+                .item(Settings.menus().common.items.background,
                         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53)
-                .item(ItemUtils.itemBuilder()
-                        .type(Material.COMPASS)
-                        .displaynameRich(lang.getMessage("gui", "common", "item", "search", "name").asString())
-                        .loreRich(lang.getMessage("gui", "common", "item", "search", "lore").asList())
-                        .build(), 43)
+                .item(Settings.menus().common.items.search, 43)
                 .build();
         heads = Template.builder()
                 .rows(6)
-                .item(ItemUtils.itemBuilder()
-                        .type(Material.BOOK)
-                        .displaynameRich(lang.getMessage("gui", "common", "item", "back", "name").asString())
-                        .build(), 45)
-                .item(ItemUtils.itemBuilder()
-                        .type(Material.COMPASS)
-                        .displaynameRich(lang.getMessage("gui", "common", "item", "search", "name").asString())
-                        .loreRich(lang.getMessage("gui", "common", "item", "search", "lore").asList())
-                        .build(), 53)
+                .item(Settings.menus().common.items.back, 45)
+                .item(Settings.menus().common.items.search, 53)
                 .build();
     }
 
     public void openOverview(Player viewer) {
-        final var lang = HeadsPlugin.getInstance().getLocale();
         final var menu = Menu.builder(overview)
                 .clickCooldown(200L);
 
         var slot = 10;
+        final var nameAndLore = Settings.menus().overview.items.category;
         for (final var category : plugin.getHeadDBManager().getCategories().values()) {
             final var categoryId = category.getId();
             if (categoryId == CategoryID.SEARCH || categoryId == CategoryID.FAVORITES) continue;
@@ -72,10 +62,8 @@ public final class GuiManager {
 
             menu.item(ItemUtils.itemBuilder()
                     .itemStack(category.getMenuItem())
-                    .displaynameRich(lang.getMessage("gui", "overview", "item", "category", "name").asString(),
-                            Placeholder.unparsed("name", category.getName()))
-                    .loreRich(lang.getMessage("gui", "overview", "item", "category", "lore").asList(),
-                            Placeholder.unparsed("count", category.getHeadsCountFormatted()))
+                    .displaynameRich(nameAndLore.name, Placeholder.unparsed("name", category.getName()))
+                    .loreRich(nameAndLore.lore, Placeholder.unparsed("count", category.getHeadsCountFormatted()))
                     .build(), event -> openHeads(viewer, category), categoryId == CategoryID.RECENT ? 37 : slot);
 
             if (categoryId != CategoryID.RECENT) slot++;
@@ -90,7 +78,7 @@ public final class GuiManager {
     }
 
     public void openHeads(Player viewer, Category category) {
-        plugin.sync(() -> new GuiHeads(viewer, heads, category));
+        plugin.sync(() -> new HeadsMenu(viewer, heads, category));
     }
 
     public void closeAll() {

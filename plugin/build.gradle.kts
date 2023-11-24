@@ -1,6 +1,10 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import net.minecrell.pluginyml.paper.PaperPluginDescription
+
 plugins {
     id("com.github.johnrengelman.shadow")
     id("xyz.jpenilla.run-paper")
+    id("net.minecrell.plugin-yml.paper")
 }
 
 dependencies {
@@ -10,27 +14,55 @@ dependencies {
     compileOnly(libs.lombok)
 
     implementation(project(":api"))
-    implementation(libs.bundles.crystal)
+    library(libs.bundles.crystal)
 
     annotationProcessor(libs.lombok)
 }
 
-tasks {
-    processResources {
-        filteringCharset = Charsets.UTF_8.name()
-        filesMatching("plugin.yml") {
-            expand("version" to project.version)
+paper {
+    name = rootProject.name
+    version = rootProject.version.toString()
+    website = "https://github.com/DenaryDev/Heads"
+    author = "DenaryDev"
+
+    main = "me.denarydev.heads.HeadsPlugin"
+    loader = "me.denarydev.heads.loader.PluginLibrariesLoader"
+
+    generateLibrariesJson = true
+
+    apiVersion = "1.20"
+
+    foliaSupported = false
+
+    provides = listOf("HeadDatabase")
+
+    serverDependencies {
+        create("PlaceholderAPI") {
+            required = false
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
     }
 
+    permissions {
+        create("skyheads.admin") {
+            description = "Admin permission"
+            default = BukkitPluginDescription.Permission.Default.OP
+            children = listOf(
+                "skyheads.user"
+            )
+        }
+        create("skyheads.user") {
+            description = "User permission"
+            default = BukkitPluginDescription.Permission.Default.TRUE
+        }
+    }
+}
+
+tasks {
     shadowJar {
         archiveClassifier.set("")
         archiveBaseName.set(rootProject.name)
         destinationDirectory.set(rootProject.projectDir.resolve("build/libs"))
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        relocate("me.denarydev.crystal", "me.denarydev.heads.crystal")
-        relocate("com.songoda.core", "me.denarydev.heads.core")
-        minimize()
     }
 
     build {
@@ -38,10 +70,14 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.19.4")
-        runDirectory(rootProject.projectDir.resolve("run/"))
-        if (!System.getenv("useCustomCore").isNullOrEmpty()) {
-            serverJar(rootProject.projectDir.resolve("run/server.jar"))
+        minecraftVersion("1.20.2")
+        runDirectory(rootProject.projectDir.resolve("run"))
+        val file = rootProject.projectDir.resolve("run/server.jar")
+        if (file.exists()) serverJar(file)
+
+        downloadPlugins {
+            url("https://download.luckperms.net/1521/bukkit/loader/LuckPerms-Bukkit-5.4.108.jar")
+            url("https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/2.11.5/placeholderapi-2.11.5.jar")
         }
     }
 }

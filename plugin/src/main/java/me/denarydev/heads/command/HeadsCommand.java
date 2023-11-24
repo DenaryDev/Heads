@@ -7,47 +7,48 @@
  */
 package me.denarydev.heads.command;
 
-import lombok.RequiredArgsConstructor;
-import me.denarydev.crystal.locale.Pair;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-@RequiredArgsConstructor
-public class HeadsCommand implements CommandExecutor, TabCompleter {
+public class HeadsCommand extends Command {
 
     private final HeadsPlugin plugin;
 
+    public HeadsCommand(HeadsPlugin plugin) {
+        super("heads");
+        this.setAliases(List.of("hdb", "head"));
+        this.plugin = plugin;
+    }
+
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
         final var player = sender instanceof Player ? (Player) sender : null;
 
         if (args.length < 1) {
             if (!plugin.getHeadDBManager().isDatabaseLoaded()) {
-                sendMessage(sender, "error.database-not-loaded");
+                sender.sendRichMessage(Settings.messages().errors.databaseNotLoaded);
                 return true;
             }
-            if (sender.hasPermission("skyheads.command.open")) {
+            if (sender.hasPermission("heads.open")) {
                 if (player != null) {
-                    plugin.getGuiManager().openOverview(player);
+                    plugin.getMenuManager().openOverview(player);
                 } else {
-                    sendMessage(sender, "error.players-only");
+                    sender.sendRichMessage(Settings.messages().errors.playersOnly);
                 }
             } else {
-                sendMessage(sender, "error.no-permission");
+                sender.sendRichMessage(Settings.messages().errors.noPermission);
             }
             return true;
         }
@@ -55,112 +56,116 @@ public class HeadsCommand implements CommandExecutor, TabCompleter {
         switch (args[0]) {
             case "reload" -> {
                 if (args.length == 1) {
-                    if (sender.hasPermission("skyheads.command.reload")) {
-                        plugin.getGuiManager().closeAll();
+                    if (sender.hasPermission("heads.reload")) {
+                        plugin.getMenuManager().closeAll();
 
                         try {
                             Settings.load(plugin.getDataFolder().toPath());
-                            plugin.getLocale().load(new Locale(Settings.main().language));
-                            plugin.runAsync(() -> plugin.getHeadDBManager().loadDatabase(loadTime -> {
+                            plugin.runAsync(() -> plugin.getHeadDBManager().loadDatabase((loadTime, loadedHeads) -> {
                                 if (loadTime > 0L) {
-                                    sendMessage(sender, "command.reload.database.success", Placeholder.unparsed("time", String.valueOf(loadTime)));
+                                    sender.sendRichMessage(Settings.messages().commands.reload.database.success,
+                                            Placeholder.unparsed("time", String.valueOf(loadTime)),
+                                            Placeholder.unparsed("amount", String.valueOf(loadedHeads))
+                                    );
                                 } else {
-                                    sendMessage(sender, "command.reload.database.failed");
+                                    sender.sendRichMessage(Settings.messages().commands.reload.database.failed);
                                 }
                             }));
                         } catch (ConfigurateException ex) {
                             plugin.getSLF4JLogger().error("Failed to load configurations", ex);
+                            sender.sendRichMessage(Settings.messages().errors.invalidConfiguration);
                         }
-                        sendMessage(sender, "command.reload.success");
+                        sender.sendRichMessage(Settings.messages().commands.reload.success);
                     } else {
-                        sendMessage(sender, "error.no-permission");
+                        sender.sendRichMessage(Settings.messages().errors.noPermission);
                     }
                 } else {
-                    usage(sender, label, "reload");
+                    sender.sendRichMessage(Settings.messages().commands.reload.usage, Placeholder.unparsed("label", label));
                 }
             }
             case "search" -> {
                 if (args.length >= 2) {
-                    if (sender.hasPermission("skyheads.command.search")) {
+                    if (sender.hasPermission("heads.search")) {
                         if (player != null) {
                             final var searchArgs = new String[args.length - 1];
                             System.arraycopy(args, 1, searchArgs, 0, args.length - 1);
                             plugin.getHeadDBManager().doSearch(player, null, String.join(" ", searchArgs), false);
                         } else {
-                            sendMessage(sender, "error.players-only");
+                            sender.sendRichMessage(Settings.messages().errors.playersOnly);
                         }
                     } else {
-                        sendMessage(sender, "error.no-permission");
+                        sender.sendRichMessage(Settings.messages().errors.noPermission);
                     }
                 } else {
-                    usage(sender, label, "search");
+                    sender.sendRichMessage(Settings.messages().commands.search.usage, Placeholder.unparsed("label", label));
                 }
             }
             case "help" -> help(sender, label);
-            default -> usage(sender, label, "help");
+            default -> {
+                return false;
+            }
         }
 
         return true;
     }
 
-    private void sendMessage(CommandSender sender, String path, TagResolver... tags) {
-        sender.sendMessage(HeadsPlugin.MINI_MESSAGE.deserialize(plugin.getLocale().getMessage(path).asString(), tags));
-    }
-
-    private void usage(CommandSender sender, String label, String s) {
-        sender.sendRichMessage(plugin.getLocale().getMessage("command.generic.usage")
-                .placeholders(
-                        Pair.of("label", label),
-                        Pair.of("usage", plugin.getLocale().getMessage("command", s, "usage").asString())
-                )
-                .asString()
-        );
-    }
-
     private void help(CommandSender sender, String label) {
         final var player = sender instanceof Player ? (Player) sender : null;
-        final var helpLines = new ArrayList<String>();
-        helpLines.add(plugin.getLocale().getMessage("command.help.header").asString());
+        final var helpLines = new ArrayList<Component>();
+        final var mm = MiniMessage.miniMessage();
+        helpLines.add(mm.deserialize(Settings.messages().commands.help.header));
 
-        if (player != null && sender.hasPermission("skyheads.command.open")) {
-            helpLines.add(plugin.getLocale().getMessage("command.help.command")
-                    .placeholders(
-                            Pair.of("usage", plugin.getLocale().getMessage("command.open.usage")
-                                    .placeholders(Pair.of("label", label))
-                                    .asString()),
-                            Pair.of("info", plugin.getLocale().getMessage("command.open.info").asString())
-                    )
-                    .asString());
+        if (player != null) {
+            if (sender.hasPermission("heads.open")) {
+                helpLines.add(mm.deserialize(Settings.messages().commands.help.entry,
+                        Placeholder.component("usage", mm.deserialize(Settings.messages().commands.open.usage,
+                                Placeholder.unparsed("label", label))),
+                        Placeholder.parsed("info", Settings.messages().commands.open.info)
+                ));
+            }
+            if (sender.hasPermission("heads.search")) {
+                helpLines.add(mm.deserialize(Settings.messages().commands.help.entry,
+                        Placeholder.component("usage", mm.deserialize(Settings.messages().commands.search.usage,
+                                Placeholder.unparsed("label", label))),
+                        Placeholder.parsed("info", Settings.messages().commands.search.info)
+                ));
+            }
         }
 
-        if (sender.hasPermission("skyheads.command.reload")) {
-            helpLines.add(plugin.getLocale().getMessage("command.help.command")
-                    .placeholders(
-                            Pair.of("usage", plugin.getLocale().getMessage("command.reload.usage")
-                                    .placeholders(Pair.of("label", label))
-                                    .asString()),
-                            Pair.of("info", plugin.getLocale().getMessage("command.reload.info").asString())
-                    )
-                    .asString());
+        if (sender.hasPermission("heads.reload")) {
+            helpLines.add(mm.deserialize(Settings.messages().commands.help.entry,
+                    Placeholder.component("usage", mm.deserialize(Settings.messages().commands.reload.usage,
+                            Placeholder.unparsed("label", label))),
+                    Placeholder.parsed("info", Settings.messages().commands.reload.info)
+            ));
         }
 
-        helpLines.add(" ");
+        if (helpLines.size() == 1) {
+            helpLines.clear();
+            helpLines.add(mm.deserialize(Settings.messages().errors.noPermission));
+        }
 
-        helpLines.forEach(sender::sendRichMessage);
+        helpLines.forEach(sender::sendMessage);
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
         final var aliases = new ArrayList<String>();
 
         if (args.length == 1) {
             if (args[0].isEmpty()) {
-                if (sender.hasPermission("skyheads.command.reload")) aliases.add("reload");
-                if (sender.hasPermission("skyheads.command.search")) aliases.add("search");
+                if (sender.hasPermission("heads.reload")) aliases.add("reload");
+                if (sender.hasPermission("heads.search")) aliases.add("search");
             } else {
                 String arg = args[0].toLowerCase(Locale.ROOT);
-                if ("reload".contains(arg) && sender.hasPermission("skyheads.command.reload")) aliases.add("reload");
-                if ("search".contains(arg) && sender.hasPermission("skyheads.command.search")) aliases.add("search");
+                if ("reload".contains(arg) && sender.hasPermission("heads.reload")) aliases.add("reload");
+                if ("search".contains(arg) && sender.hasPermission("heads.search")) aliases.add("search");
+            }
+        } else if (args.length == 2) {
+            if (args[1].isEmpty()) {
+                if (args[0].equals("search") && sender.hasPermission("heads.search")) {
+                    aliases.add("[args]");
+                }
             }
         }
 

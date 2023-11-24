@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 DenaryDev
+ * Copyright (c) 2023 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -16,21 +16,21 @@ import java.util.List;
  */
 public interface Head {
 
-    CategoryID getCategoryID();
+    CategoryID categoryID();
 
-    Category getCategory();
+    Category category();
 
-    int getId();
+    int id();
 
-    String getName();
+    String name();
 
-    String getBase64();
+    String base64();
 
     boolean hasTags();
 
-    List<String> getTags();
+    List<String> tags();
 
-    String getTagsString();
+    String tagsString();
 
-    ItemStack getItem();
+    ItemStack itemStack();
 }

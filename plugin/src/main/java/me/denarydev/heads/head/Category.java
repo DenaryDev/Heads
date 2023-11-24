@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 DenaryDev
+ * Copyright (c) 2023 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -10,7 +10,6 @@ package me.denarydev.heads.head;
 import lombok.Getter;
 import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.crystal.utils.NumberUtils;
-import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
 import me.denarydev.heads.api.head.CategoryID;
 import org.bukkit.inventory.ItemStack;
@@ -19,13 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Getter
 public class Category implements me.denarydev.heads.api.head.Category {
 
-    @Getter
     private final CategoryID id;
-    @Getter
     private final List<Head> heads;
-    @Getter
     private final ItemStack menuItem;
 
     public Category(CategoryID id, List<Head> heads) {
@@ -44,7 +41,7 @@ public class Category implements me.denarydev.heads.api.head.Category {
             case MONSTERS -> categories.monsters;
             case PLANTS -> categories.plants;
             case OTHER -> categories.custom;
-            case RECENT, FAVORITES -> getRandomHead().getBase64();
+            case RECENT, FAVORITES -> getRandomHead().base64();
             case SEARCH -> null;
         });
     }
@@ -56,7 +53,7 @@ public class Category implements me.denarydev.heads.api.head.Category {
 
     @Override
     public Head getHead(int id) {
-        return heads.stream().filter(head -> head.getId() == id).findFirst().orElse(null);
+        return heads.stream().filter(head -> head.id() == id).findFirst().orElse(null);
     }
 
     @Override
@@ -71,7 +68,22 @@ public class Category implements me.denarydev.heads.api.head.Category {
 
     @Override
     public String getName() {
-        return HeadsPlugin.getInstance().getLocale().getMessage("category." + id.toLower()).asString();
+        return switch (this.id) {
+            case ALPHABET -> Settings.messages().category.alphabet;
+            case ANIMALS -> Settings.messages().category.animals;
+            case BLOCKS -> Settings.messages().category.blocks;
+            case DECORATION -> Settings.messages().category.decoration;
+            case FOOD_DRINKS -> Settings.messages().category.food_drinks;
+            case HUMANS -> Settings.messages().category.humans;
+            case HUMANOID -> Settings.messages().category.humanoid;
+            case MISCELLANEOUS -> Settings.messages().category.miscellaneous;
+            case MONSTERS -> Settings.messages().category.monsters;
+            case PLANTS -> Settings.messages().category.plants;
+            case RECENT -> Settings.messages().category.recent;
+            case FAVORITES -> Settings.messages().category.favorites;
+            case SEARCH -> Settings.messages().category.search;
+            case OTHER -> Settings.messages().category.other;
+        };
     }
 
     @Override

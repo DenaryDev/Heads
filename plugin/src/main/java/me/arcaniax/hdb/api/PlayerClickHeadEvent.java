@@ -23,7 +23,7 @@ public class PlayerClickHeadEvent extends PlayerEvent implements Cancellable {
     }
 
     public CategoryEnum getCategoryEnum() {
-        return CategoryEnum.fromId(head.getCategoryID());
+        return CategoryEnum.fromId(head.categoryID());
     }
 
     public double getPrice() {
@@ -31,7 +31,7 @@ public class PlayerClickHeadEvent extends PlayerEvent implements Cancellable {
     }
 
     public String getHeadID() {
-        return String.valueOf(head.getId());
+        return String.valueOf(head.id());
     }
 
     public boolean isEconomy() {
@@ -43,7 +43,7 @@ public class PlayerClickHeadEvent extends PlayerEvent implements Cancellable {
     }
 
     public ItemStack getHead() {
-        return head.getItem();
+        return head.itemStack();
     }
 
     @Override

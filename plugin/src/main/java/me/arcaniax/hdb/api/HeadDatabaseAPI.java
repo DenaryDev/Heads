@@ -8,9 +8,9 @@
 package me.arcaniax.hdb.api;
 
 import me.arcaniax.hdb.api.enums.CategoryEnum;
+import me.arcaniax.hdb.api.object.head.Head;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.api.head.CategoryID;
-import me.denarydev.heads.head.Head;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,18 +28,19 @@ public class HeadDatabaseAPI {
 
     public String getBase64(String id) {
         final var head = getHead(id);
-        if (head != null) return head.getBase64();
+        if (head != null) return head.getHandle().base64();
         return null;
     }
 
     public ItemStack getItemHead(String id) {
         final var head = getHead(id);
-        if (head != null) return head.getItem();
+        if (head != null) return head.getHandle().itemStack();
         return null;
     }
 
     public List<Head> getHeads(CategoryEnum category) {
-        return HeadsPlugin.getInstance().getHeadDBManager().getCategory(CategoryID.valueOf(category.name())).getHeads();
+        return HeadsPlugin.getInstance().getHeadDBManager().getCategory(CategoryID.valueOf(category.name())).getHeads()
+                .stream().map(Head::new).toList();
     }
 
     public ItemStack getRandomHead() {
@@ -113,8 +114,8 @@ public class HeadDatabaseAPI {
         final var categories = HeadsPlugin.getInstance().getHeadDBManager().getCategories().values();
         for (final var category : categories) {
             for (final var head : category.getHeads()) {
-                if (head.getId() == Integer.parseInt(id)) {
-                    return head;
+                if (head.id() == Integer.parseInt(id)) {
+                    return new Head(head);
                 }
             }
         }
