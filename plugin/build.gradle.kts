@@ -1,5 +1,6 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import net.minecrell.pluginyml.paper.PaperPluginDescription
+import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
     id("com.github.johnrengelman.shadow")
@@ -30,9 +31,11 @@ paper {
 
     generateLibrariesJson = true
 
+    hasOpenClassloader = false
+
     apiVersion = "1.20"
 
-    foliaSupported = false
+    foliaSupported = true
 
     provides = listOf("HeadDatabase")
 
@@ -58,6 +61,10 @@ paper {
     }
 }
 
+runPaper {
+    folia.registerTask()
+}
+
 tasks {
     shadowJar {
         archiveClassifier.set("")
@@ -69,15 +76,17 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    runServer {
+    withType<RunServer>().configureEach() {
         minecraftVersion("1.20.2")
         runDirectory(rootProject.projectDir.resolve("run"))
         val file = rootProject.projectDir.resolve("run/server.jar")
         if (file.exists()) serverJar(file)
 
-        downloadPlugins {
-            url("https://download.luckperms.net/1521/bukkit/loader/LuckPerms-Bukkit-5.4.108.jar")
-            url("https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/2.11.5/placeholderapi-2.11.5.jar")
+        if (name == "runServer") {
+            downloadPlugins {
+                url("https://download.luckperms.net/1521/bukkit/loader/LuckPerms-Bukkit-5.4.108.jar")
+                url("https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/2.11.5/placeholderapi-2.11.5.jar")
+            }
         }
     }
 }

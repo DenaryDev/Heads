@@ -3,7 +3,7 @@
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            version("crystal", "2.0.3")
+            version("crystal", "2.0.4")
 
             library("bukkit", "io.sapphiremc.sapphire:sapphire-api:1.20.2-R0.1-SNAPSHOT")
             library("papi", "me.clip:placeholderapi:2.11.5")

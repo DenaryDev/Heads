@@ -19,7 +19,7 @@ import org.bukkit.event.inventory.ClickType;
 public class EventManager {
 
     public static void callDatabaseLoadEvent(long loadTimeMs) {
-        HeadsPlugin.getInstance().sync(() -> {
+        Bukkit.getGlobalRegionScheduler().execute(HeadsPlugin.getInstance(), () -> {
             HeadsPlugin.getInstance().logDebug("Calling DatabaseLoadEvent event");
             final var event = new DatabaseLoadEvent(loadTimeMs);
             Bukkit.getPluginManager().callEvent(event);

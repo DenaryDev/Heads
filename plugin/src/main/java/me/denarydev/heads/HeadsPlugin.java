@@ -13,6 +13,7 @@ import me.denarydev.heads.head.HeadDBManager;
 import me.denarydev.heads.impl.HeadsAPIImpl;
 import me.denarydev.heads.menu.MenuManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurateException;
 
@@ -56,10 +57,10 @@ public class HeadsPlugin extends JavaPlugin {
     }
 
     public void runAsync(Runnable task) {
-        getServer().getScheduler().runTaskAsynchronously(this, task);
+        getServer().getAsyncScheduler().runNow(this, (st) -> task.run());
     }
 
     public void sync(Runnable task) {
-        getServer().getScheduler().runTask(this, task);
+        getServer().getGlobalRegionScheduler().execute(this, task);
     }
 }

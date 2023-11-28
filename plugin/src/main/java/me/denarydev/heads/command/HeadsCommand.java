@@ -37,11 +37,11 @@ public class HeadsCommand extends Command {
         final var player = sender instanceof Player ? (Player) sender : null;
 
         if (args.length < 1) {
-            if (!plugin.getHeadDBManager().isDatabaseLoaded()) {
-                sender.sendRichMessage(Settings.messages().errors.databaseNotLoaded);
-                return true;
-            }
             if (sender.hasPermission("heads.open")) {
+                if (!plugin.getHeadDBManager().isDatabaseLoaded()) {
+                    sender.sendRichMessage(Settings.messages().errors.databaseNotLoaded);
+                    return true;
+                }
                 if (player != null) {
                     plugin.getMenuManager().openOverview(player);
                 } else {
@@ -86,6 +86,10 @@ public class HeadsCommand extends Command {
             case "search" -> {
                 if (args.length >= 2) {
                     if (sender.hasPermission("heads.search")) {
+                        if (!plugin.getHeadDBManager().isDatabaseLoaded()) {
+                            sender.sendRichMessage(Settings.messages().errors.databaseNotLoaded);
+                            return true;
+                        }
                         if (player != null) {
                             final var searchArgs = new String[args.length - 1];
                             System.arraycopy(args, 1, searchArgs, 0, args.length - 1);
