@@ -38,12 +38,12 @@ subprojects {
         mavenCentral()
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-        maven("https://the-planet.fun/repo/public/")
+        maven("https://repo.activmine.ru/public/")
     }
 
     publishing {
         repositories {
-            maven("https://the-planet.fun/repo/snapshots/") {
+            maven("https://repo.activmine.ru/snapshots/") {
                 name = "SapphireMC"
                 credentials(PasswordCredentials::class)
             }
