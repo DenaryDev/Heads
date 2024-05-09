@@ -5,7 +5,7 @@
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-package me.denarydev.heads.impl;
+package me.denarydev.heads.api;
 
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.api.events.DatabaseLoadEvent;

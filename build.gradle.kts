@@ -1,58 +1,57 @@
+import com.diffplug.spotless.LineEnding
+
 plugins {
-    `java-library`
-    `maven-publish`
-    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
-    id("xyz.jpenilla.run-paper") version "2.2.0" apply false
-    id("net.minecrell.plugin-yml.paper") version "0.6.0" apply false
+    id("java")
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.pluginyml) apply false
+    alias(libs.plugins.shadow) apply false
+    alias(libs.plugins.runpaper) apply false
 }
 
 allprojects {
-    apply(plugin = "java-library")
     group = "me.denarydev.heads"
-    version = "1.1.0"
-
-    tasks {
-        withType<ProcessResources> {
-            filteringCharset = Charsets.UTF_8.name()
-        }
-        withType<JavaCompile> {
-            options.encoding = Charsets.UTF_8.name()
-            options.release.set(17)
-        }
-        withType<Javadoc> {
-            options.encoding = Charsets.UTF_8.name()
-        }
-
-        java {
-            toolchain {
-                languageVersion.set(JavaLanguageVersion.of(17))
-            }
-        }
-    }
+    version = "1.2.0"
 }
 
 subprojects {
-    apply(plugin = "maven-publish")
-
-    repositories {
-        mavenCentral()
-        maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-        maven("https://repo.activmine.ru/public/")
+    apply(plugin = "java")
+    apply(plugin = "com.diffplug.spotless")
+    dependencies {
+        compileOnly(rootProject.libs.sapphire)
+        compileOnly(rootProject.libs.lombok)
+        annotationProcessor(rootProject.libs.lombok)
     }
 
-    publishing {
-        repositories {
-            maven("https://repo.activmine.ru/snapshots/") {
-                name = "SapphireMC"
-                credentials(PasswordCredentials::class)
-            }
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
+
+    spotless {
+        java {
+            target("**/ru/prostocraft/plugins/arena/**")
+
+            trimTrailingWhitespace()
+            indentWithSpaces(4)
+            endWithNewline()
+            lineEndings = LineEnding.UNIX
         }
     }
 
     tasks {
-        compileJava {
+        withType<JavaCompile>().configureEach {
             options.encoding = Charsets.UTF_8.name()
+            options.release.set(17)
+        }
+        withType<Javadoc>().configureEach {
+            options.encoding = Charsets.UTF_8.name()
+        }
+        withType<ProcessResources>().configureEach {
+            filteringCharset = Charsets.UTF_8.name()
+        }
+
+        compileJava {
             options.compilerArgs.addAll(
                 listOf(
                     "-parameters",

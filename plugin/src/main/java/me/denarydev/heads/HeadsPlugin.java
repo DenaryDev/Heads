@@ -10,10 +10,9 @@ package me.denarydev.heads;
 import lombok.Getter;
 import me.denarydev.heads.command.HeadsCommand;
 import me.denarydev.heads.head.HeadDBManager;
-import me.denarydev.heads.impl.HeadsAPIImpl;
+import me.denarydev.heads.api.HeadsAPIImpl;
 import me.denarydev.heads.menu.MenuManager;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurateException;
 

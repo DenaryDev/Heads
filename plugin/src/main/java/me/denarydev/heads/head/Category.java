@@ -29,7 +29,7 @@ public class Category implements me.denarydev.heads.api.head.Category {
         this.id = id;
         this.heads = heads;
         final var categories = Settings.main().categories;
-        this.menuItem = ItemUtils.getCustomHead(switch (this.id) {
+        this.menuItem = ItemUtils.createHead(switch (this.id) {
             case ALPHABET -> categories.alphabet;
             case ANIMALS -> categories.animals;
             case BLOCKS -> categories.blocks;
@@ -63,7 +63,7 @@ public class Category implements me.denarydev.heads.api.head.Category {
 
     @Override
     public String getHeadsCountFormatted() {
-        return NumberUtils.formatWithSuffix(getHeadsCount());
+        return NumberUtils.formatNumber(getHeadsCount());
     }
 
     @Override

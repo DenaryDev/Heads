@@ -7,22 +7,22 @@
  */
 package me.denarydev.heads.api;
 
+import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.Setter;
 import me.denarydev.heads.api.head.HeadsManager;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Api for Heads plugin
  */
-public interface HeadsAPI {
+public abstract class HeadsAPI {
+    @Setter(AccessLevel.PACKAGE)
+    private static HeadsAPI impl;
 
-    static HeadsAPI get() {
-        return Holder.api;
+    public static HeadsAPI get() {
+        Preconditions.checkNotNull(impl, "Api not initialized yet.");
+        return impl;
     }
 
-    HeadsManager getHeadsManager();
-
-    @RequiredArgsConstructor
-    class Holder {
-        public static HeadsAPI api;
-    }
+    public abstract HeadsManager getHeadsManager();
 }

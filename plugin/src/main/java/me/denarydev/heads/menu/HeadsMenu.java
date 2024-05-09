@@ -13,10 +13,9 @@ import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
 import me.denarydev.heads.head.Category;
-import me.denarydev.heads.impl.EventManager;
+import me.denarydev.heads.api.EventManager;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class HeadsMenu {
@@ -68,7 +67,7 @@ public class HeadsMenu {
         if (pages - page == 0 && page - 6 >= 1) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page - 6)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -79,7 +78,7 @@ public class HeadsMenu {
         if (pages - page <= 1 && page - 5 >= 1) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page - 5)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -90,7 +89,7 @@ public class HeadsMenu {
         if (pages - page <= 2 && page - 4 >= 1) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page - 4)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -101,7 +100,7 @@ public class HeadsMenu {
         if (page - 3 >= 1) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page - 3)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -112,7 +111,7 @@ public class HeadsMenu {
         if (page - 2 >= 1) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page - 2)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -123,7 +122,7 @@ public class HeadsMenu {
         if (page - 1 >= 1) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page - 1)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -133,7 +132,7 @@ public class HeadsMenu {
 
         menu.item(ItemUtils.itemBuilder()
                 .type(Settings.menus().heads.items.pageSelected.type)
-                .displaynameRich(Settings.menus().heads.items.pageSelected.name,
+                .displayNameRich(Settings.menus().heads.items.pageSelected.name,
                         Placeholder.unparsed("page", String.valueOf(page)))
                 .loreRich(Settings.menus().heads.items.pageSelected.lore,
                         Placeholder.parsed("id", category.getName()))
@@ -143,7 +142,7 @@ public class HeadsMenu {
         if (page + 1 <= pages) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page + 1)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -154,7 +153,7 @@ public class HeadsMenu {
         if (page + 2 <= pages) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page + 2)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -165,7 +164,7 @@ public class HeadsMenu {
         if (page + 3 <= pages) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page + 3)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -176,7 +175,7 @@ public class HeadsMenu {
         if (page + 4 <= pages && currentPageSlot < 53) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page + 4)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -187,7 +186,7 @@ public class HeadsMenu {
         if (page + 5 <= pages && currentPageSlot < 53) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page + 5)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
@@ -198,14 +197,14 @@ public class HeadsMenu {
         if (page + 6 <= pages && currentPageSlot < 53) {
             menu.item(ItemUtils.itemBuilder()
                     .type(Settings.menus().heads.items.pageUnselected.type)
-                    .displaynameRich(Settings.menus().heads.items.pageUnselected.name,
+                    .displayNameRich(Settings.menus().heads.items.pageUnselected.name,
                             Placeholder.unparsed("page", String.valueOf(page + 6)))
                     .loreRich(Settings.menus().heads.items.pageUnselected.lore,
                             Placeholder.parsed("id", category.getName()))
                     .build(), event -> showPage(template, page + 6), currentPageSlot);
         }
 
-        menu.clickAction(event -> plugin.getMenuManager().openOverview(viewer), 45);
+        menu.action(event -> plugin.getMenuManager().openOverview(viewer), 45);
         //menu.clickAction(event -> plugin.getHeadDBManager().showSearchChatPrompt(viewer, null, event.isRightClick()), 53);
 
         menu.build().open(viewer);

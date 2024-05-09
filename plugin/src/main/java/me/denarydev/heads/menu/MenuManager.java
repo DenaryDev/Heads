@@ -35,7 +35,7 @@ public final class MenuManager {
     public void loadTemplates() {
         overview = Template.builder()
                 .titleRich(Settings.menus().overview.title,
-                        Placeholder.unparsed("count", NumberUtils.formatWithSuffix(plugin.getHeadDBManager().getHeadsLoaded())))
+                        Placeholder.unparsed("count", NumberUtils.formatNumber(plugin.getHeadDBManager().getHeadsLoaded())))
                 .rows(6)
                 .item(Settings.menus().common.items.background,
                         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53)
@@ -62,7 +62,7 @@ public final class MenuManager {
 
             menu.item(ItemUtils.itemBuilder()
                     .itemStack(category.getMenuItem())
-                    .displaynameRich(nameAndLore.name, Placeholder.unparsed("name", category.getName()))
+                    .displayNameRich(nameAndLore.name, Placeholder.unparsed("name", category.getName()))
                     .loreRich(nameAndLore.lore, Placeholder.unparsed("count", category.getHeadsCountFormatted()))
                     .build(), event -> openHeads(viewer, category), categoryId == CategoryID.RECENT ? 37 : slot);
 

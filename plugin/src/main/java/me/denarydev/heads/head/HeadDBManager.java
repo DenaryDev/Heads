@@ -14,7 +14,7 @@ import me.denarydev.heads.Settings;
 import me.denarydev.heads.api.events.PlayerSearchHeadsEvent;
 import me.denarydev.heads.api.head.CategoryID;
 import me.denarydev.heads.api.head.HeadsManager;
-import me.denarydev.heads.impl.EventManager;
+import me.denarydev.heads.api.EventManager;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -88,8 +88,7 @@ public class HeadDBManager implements HeadsManager {
                 }
             }
         } catch (IOException ex) {
-            plugin.getLogger().severe("Error fetching heads from website");
-            ex.printStackTrace();
+            plugin.getSLF4JLogger().error("Error fetching heads from website", ex);
             if (callback != null) plugin.sync(() -> callback.accept(-1L, 0));
             return;
         }
@@ -120,7 +119,7 @@ public class HeadDBManager implements HeadsManager {
         final long loadTime = System.currentTimeMillis() - startTime;
         EventManager.callDatabaseLoadEvent(loadTime);
         if (callback != null) plugin.sync(() -> callback.accept(loadTime, headsLoaded));
-        plugin.getLogger().info("Successfully loaded " + headsLoaded + " heads with " + categoriesLoaded + " categories in %sms!".formatted(loadTime));
+        plugin.getSLF4JLogger().info("Successfully loaded {} heads with {} categories in {}ms!", headsLoaded, categoriesLoaded, loadTime);
 
         plugin.sync(plugin.getMenuManager()::loadTemplates);
     }
@@ -172,7 +171,7 @@ public class HeadDBManager implements HeadsManager {
     public ItemStack getHead(int id) {
         final var category = categories.values().stream().filter(c -> c.getHead(id) != null).findFirst().orElse(null);
         if (category != null) {
-            return ItemUtils.getCustomHead(category.getHead(id).base64());
+            return ItemUtils.createHead(category.getHead(id).base64());
         }
         return null;
     }

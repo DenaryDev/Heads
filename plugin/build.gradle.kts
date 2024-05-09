@@ -9,15 +9,10 @@ plugins {
 }
 
 dependencies {
-    compileOnly(libs.bukkit)
-    compileOnly(libs.papi)
-
-    compileOnly(libs.lombok)
+    compileOnly(libs.placeholderapi)
 
     implementation(project(":api"))
-    library(libs.bundles.crystal)
-
-    annotationProcessor(libs.lombok)
+    implementation(libs.bundles.crystal)
 }
 
 paper {
@@ -27,11 +22,6 @@ paper {
     author = "DenaryDev"
 
     main = "me.denarydev.heads.HeadsPlugin"
-    loader = "me.denarydev.heads.loader.PluginLibrariesLoader"
-
-    generateLibrariesJson = true
-
-    hasOpenClassloader = false
 
     apiVersion = "1.20"
 
@@ -67,16 +57,16 @@ runPaper {
 
 tasks {
     shadowJar {
-        archiveClassifier.set("")
-        archiveBaseName.set(rootProject.name)
-        destinationDirectory.set(rootProject.projectDir.resolve("build/libs"))
+        archiveClassifier = ""
+        archiveBaseName = rootProject.name
+        destinationDirectory = rootProject.projectDir.resolve("build/libs")
     }
 
     build {
         dependsOn(shadowJar)
     }
 
-    withType<RunServer>().configureEach() {
+    withType<RunServer>().configureEach {
         minecraftVersion("1.20.2")
         runDirectory(rootProject.projectDir.resolve("run"))
         val file = rootProject.projectDir.resolve("run/server.jar")

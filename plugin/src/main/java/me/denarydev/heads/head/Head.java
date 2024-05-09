@@ -44,8 +44,8 @@ public record Head(CategoryID categoryID, int id, String name, String base64, bo
     @Override
     public ItemStack itemStack() {
         return ItemUtils.itemBuilder()
-                .itemStack(ItemUtils.getCustomHead(base64))
-                .displaynameRich(Settings.menus().heads.items.head.name, Placeholder.unparsed("name", name))
+                .itemStack(ItemUtils.createHead(base64))
+                .displayNameRich(Settings.menus().heads.items.head.name, Placeholder.unparsed("name", name))
                 .loreRich(Settings.menus().heads.items.head.lore,
                         Placeholder.parsed("category", category().getName()),
                         Placeholder.unparsed("tags", tagsString()),

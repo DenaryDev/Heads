@@ -1,0 +1,32 @@
+[versions]
+sapphire = "1.20.2-R0.1-SNAPSHOT"
+crystal = "2.1.1"
+
+placeholderapi = "2.11.5"
+lombok = "1.18.30"
+
+spotless = "6.25.0"
+plugin-yml = "0.6.0"
+shadow = "8.1.1"
+run-task = "2.3.0"
+
+[libraries]
+sapphire = { module = "io.sapphiremc.sapphire:sapphire-api", version.ref = "sapphire" }
+
+crystal-paper-gui = { module = "me.denarydev.crystal.paper:gui", version.ref = "crystal" }
+crystal-paper-utils = { module = "me.denarydev.crystal.paper:utils", version.ref = "crystal" }
+crystal-paper-serialzers = { module = "me.denarydev.crystal.paper:serializers", version.ref = "crystal" }
+crystal-shared-config = { module = "me.denarydev.crystal.shared:config", version.ref = "crystal" }
+crystal-shared-utils = { module = "me.denarydev.crystal.shared:utils", version.ref = "crystal" }
+
+placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+
+[plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+pluginyml = { id = "net.minecrell.plugin-yml.paper", version.ref = "plugin-yml" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
+runpaper = { id = "xyz.jpenilla.run-paper", version.ref = "run-task" }
+
+[bundles]
+crystal = ["crystal-paper-gui", "crystal-paper-utils", "crystal-paper-serialzers", "crystal-shared-config", "crystal-shared-utils"]
