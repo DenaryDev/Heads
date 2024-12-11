@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2023 DenaryDev
+ * Copyright (c) 2024 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
+
 package me.denarydev.heads;
 
 import me.denarydev.crystal.config.BukkitConfigs;
@@ -104,6 +105,8 @@ public final class Settings {
             public String playersOnly = "<red>Эту команду могут использовать только игроки!";
             public String databaseNotLoaded = "<red>База данных ещё не загрузилась, попробуйте позднее!";
             public String invalidConfiguration = "<red>Плагин не смог загрузиться из-за неправильной конфигурации! В консоли может быть больше информации об этом.";
+            @Comment("Добавляется в описание головы в меню, если у неё нет тегов")
+            public String noTags = "Тегов нет";
         }
 
         @ConfigSerializable
@@ -180,7 +183,7 @@ public final class Settings {
             public static class Items {
                 public ItemStack search = ItemUtils.itemBuilder()
                         .type(Material.COMPASS)
-                        .displaynameRich("<yellow>Поиск")
+                        .displayNameRich("<yellow>Поиск")
                         .loreRich(List.of(
                                 "<gray>Для поиска используйте:",
                                 "<gray>/heads search <название|тег>"
@@ -188,11 +191,11 @@ public final class Settings {
                         .build();
                 public ItemStack back = ItemUtils.itemBuilder()
                         .type(Material.BOOK)
-                        .displaynameRich("<red>Вернуться к категориям")
+                        .displayNameRich("<red>Вернуться к категориям")
                         .build();
                 public ItemStack background = ItemUtils.itemBuilder()
                         .type(Material.GRAY_STAINED_GLASS_PANE)
-                        .displayname(Component.space())
+                        .displayName(Component.space())
                         .build();
             }
         }
@@ -244,7 +247,7 @@ public final class Settings {
                 );
                 public ItemStack empty = ItemUtils.itemBuilder()
                         .type(Material.STRUCTURE_VOID)
-                        .displaynameRich("<red>пусто")
+                        .displayNameRich("<red>пусто")
                         .build();
             }
         }

@@ -3,9 +3,9 @@ import net.minecrell.pluginyml.paper.PaperPluginDescription
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
-    id("com.github.johnrengelman.shadow")
-    id("xyz.jpenilla.run-paper")
-    id("net.minecrell.plugin-yml.paper")
+    id(libs.plugins.shadow.get().pluginId)
+    id(libs.plugins.runpaper.get().pluginId)
+    id(libs.plugins.pluginyml.get().pluginId)
 }
 
 dependencies {
@@ -23,7 +23,7 @@ paper {
 
     main = "me.denarydev.heads.HeadsPlugin"
 
-    apiVersion = "1.20"
+    apiVersion = "1.21"
 
     foliaSupported = true
 
@@ -67,15 +67,15 @@ tasks {
     }
 
     withType<RunServer>().configureEach {
-        minecraftVersion("1.20.2")
+        minecraftVersion("1.21.3")
         runDirectory(rootProject.projectDir.resolve("run"))
         val file = rootProject.projectDir.resolve("run/server.jar")
         if (file.exists()) serverJar(file)
 
         if (name == "runServer") {
             downloadPlugins {
-                url("https://download.luckperms.net/1521/bukkit/loader/LuckPerms-Bukkit-5.4.108.jar")
-                url("https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/2.11.5/placeholderapi-2.11.5.jar")
+                url("https://download.luckperms.net/1567/bukkit/loader/LuckPerms-Bukkit-5.4.150.jar")
+                url("https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/2.11.6/placeholderapi-2.11.6.jar")
             }
         }
     }

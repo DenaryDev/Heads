@@ -10,27 +10,29 @@ plugins {
 
 allprojects {
     group = "me.denarydev.heads"
-    version = "1.2.0"
+    version = "1.3.0"
 }
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "com.diffplug.spotless")
+    apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
     dependencies {
-        compileOnly(rootProject.libs.sapphire)
+        compileOnly(rootProject.libs.paper)
         compileOnly(rootProject.libs.lombok)
         annotationProcessor(rootProject.libs.lombok)
     }
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     spotless {
         java {
-            target("**/ru/prostocraft/plugins/arena/**")
+            target("**/me/denarydev/heads/**")
 
             trimTrailingWhitespace()
             indentWithSpaces(4)
@@ -42,7 +44,7 @@ subprojects {
     tasks {
         withType<JavaCompile>().configureEach {
             options.encoding = Charsets.UTF_8.name()
-            options.release.set(17)
+            options.release.set(21)
         }
         withType<Javadoc>().configureEach {
             options.encoding = Charsets.UTF_8.name()

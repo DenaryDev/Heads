@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2023 DenaryDev
+ * Copyright (c) 2024 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
+
 package me.denarydev.heads.command;
 
 import me.denarydev.heads.HeadsPlugin;
@@ -28,7 +29,7 @@ public class HeadsCommand extends Command {
 
     public HeadsCommand(HeadsPlugin plugin) {
         super("heads");
-        this.setAliases(List.of("hdb", "head"));
+        setAliases(List.of("hdb", "head"));
         this.plugin = plugin;
     }
 

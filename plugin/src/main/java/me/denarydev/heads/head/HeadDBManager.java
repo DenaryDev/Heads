@@ -1,20 +1,21 @@
 /*
- * Copyright (c) 2023 DenaryDev
+ * Copyright (c) 2024 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
+
 package me.denarydev.heads.head;
 
 import lombok.Getter;
 import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
+import me.denarydev.heads.api.EventManager;
 import me.denarydev.heads.api.events.PlayerSearchHeadsEvent;
 import me.denarydev.heads.api.head.CategoryID;
 import me.denarydev.heads.api.head.HeadsManager;
-import me.denarydev.heads.api.EventManager;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +67,7 @@ public class HeadDBManager implements HeadsManager {
         final Map<String, List<Head>> readContent = new TreeMap<>();
         try {
             plugin.logDebug("Fetching heads from website");
-            final var url = new URL("https://minecraft-heads.4lima.de/csv/2022-02-25-ZgFDreHnLiGvHdf3RFfgg/Custom-Head-DB.csv");
+            final var url = URI.create("https://minecraft-heads.4lima.de/csv/2022-02-25-ZgFDreHnLiGvHdf3RFfgg/Custom-Head-DB.csv").toURL();
             final var connection = url.openConnection();
 
             try (final var reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {

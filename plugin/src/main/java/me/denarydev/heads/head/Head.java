@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2023 DenaryDev
+ * Copyright (c) 2024 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
+
 package me.denarydev.heads.head;
 
 import me.denarydev.crystal.utils.ItemUtils;
@@ -38,7 +39,7 @@ public record Head(CategoryID categoryID, int id, String name, String base64, bo
             }
             return builder.toString();
         }
-        return "No Tags";
+        return Settings.messages().errors.noTags;
     }
 
     @Override
