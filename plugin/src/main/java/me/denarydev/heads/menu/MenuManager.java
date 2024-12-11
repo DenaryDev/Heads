@@ -21,6 +21,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 public final class MenuManager {
 
     private final HeadsPlugin plugin;
@@ -57,14 +59,20 @@ public final class MenuManager {
         final var nameAndLore = Settings.menus().overview.items.category;
         for (final var category : plugin.getHeadDBManager().getCategories().values()) {
             final var categoryId = category.getId();
-            if (categoryId == CategoryID.SEARCH || categoryId == CategoryID.FAVORITES) continue;
-            if (Settings.main().perCategoryPermissions && !viewer.hasPermission("heads.category." + categoryId.toLower()))
-                continue;
+            if (categoryId == CategoryID.SEARCH || categoryId == CategoryID.FAVORITES // Эти категории отображаются отдельно
+                    || (Settings.main().perCategoryPermissions && !viewer.hasPermission("heads.category." + categoryId.toLower()))
+                    || (category.getHeadsCount() < 1 && !Settings.main().showEmptyCategories)
+            ) continue;
+
+            final var lore = new ArrayList<String>();
+            if (category.getDescription() != null)
+                lore.addAll(category.getDescription());
+            lore.addAll(nameAndLore.lore);
 
             menu.item(ItemUtils.itemBuilder()
                     .itemStack(category.getMenuItem())
                     .displayNameRich(nameAndLore.name, Placeholder.unparsed("name", category.getName()))
-                    .loreRich(nameAndLore.lore, Placeholder.unparsed("count", category.getHeadsCountFormatted()))
+                    .loreRich(lore, Placeholder.unparsed("count", category.getHeadsCountFormatted()))
                     .build(), event -> openHeads(viewer, category), categoryId == CategoryID.RECENT ? 37 : slot);
 
             if (categoryId != CategoryID.RECENT) slot++;

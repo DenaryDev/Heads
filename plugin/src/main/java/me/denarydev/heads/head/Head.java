@@ -12,6 +12,7 @@ import me.denarydev.crystal.utils.ItemUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
 import me.denarydev.heads.api.head.CategoryID;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.inventory.ItemStack;
 
@@ -46,7 +47,7 @@ public record Head(CategoryID categoryID, int id, String name, String base64, bo
     public ItemStack itemStack() {
         return ItemUtils.itemBuilder()
                 .itemStack(ItemUtils.createHead(base64))
-                .displayNameRich(Settings.menus().heads.items.head.name, Placeholder.unparsed("name", name))
+                .displayNameRich(Settings.menus().heads.items.head.name, Placeholder.component("name", Component.text(name)))
                 .loreRich(Settings.menus().heads.items.head.lore,
                         Placeholder.parsed("category", category().getName()),
                         Placeholder.unparsed("tags", tagsString()),

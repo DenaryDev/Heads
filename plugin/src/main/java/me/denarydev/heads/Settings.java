@@ -59,8 +59,10 @@ public final class Settings {
         public Categories categories = new Categories();
         @Comment("Отдельное право для каждой категории")
         public boolean perCategoryPermissions = false;
-        @Comment("Отправлять сообщение о начале поиска или нет?")
+        @Comment("Отправлять ли сообщение о начале поиска")
         public boolean searchingMessage = true;
+        @Comment("Скрывать ли в главком меню категории, в которых нет голов")
+        public boolean showEmptyCategories = false;
 
         @ConfigSerializable
         public static class Categories {
@@ -84,7 +86,7 @@ public final class Settings {
     public static class MessagesConfig {
         public General general = new General();
         public Errors errors = new Errors();
-        public Category category = new Category();
+        public Categories categories = new Categories();
         public Commands commands = new Commands();
 
         @ConfigSerializable
@@ -110,21 +112,36 @@ public final class Settings {
         }
 
         @ConfigSerializable
-        public static class Category {
-            public String alphabet = "Алфавит";
-            public String animals = "Животные";
-            public String blocks = "Блоки";
-            public String decoration = "Декорации";
-            public String food_drinks = "Еда и напитки";
-            public String humans = "Люди";
-            public String humanoid = "Гуманоиды";
-            public String miscellaneous = "Разнообразное";
-            public String monsters = "Монстры";
-            public String plants = "Растения";
-            public String other = "Другие головы";
-            public String recent = "Недавно добавленное";
-            public String favorites = "Избранное";
-            public String search = "Результаты поиска";
+        public static class Categories {
+            public NameDescription alphabet = new NameDescription("Алфавит", List.of("<gray>Буквы, цифры и другие символы"));
+            public NameDescription animals = new NameDescription("Животные", List.of("<gray>Головы в виде различных животных,", "<gray>Как реальных, так и выдуманных"));
+            public NameDescription blocks = new NameDescription("Блоки", List.of("<gray>Уменьшенные версии всевозможных блоков"));
+            public NameDescription decoration = new NameDescription("Декорации", List.of("<gray>ОЧЕНЬ много всевозможных украшений:", "<gray>Подарки, часы, кубик рубика и тд", "<gray>А так же ванильные предметы в виде голов)"));
+            public NameDescription food_drinks = new NameDescription("Еда и напитки", List.of("<gray>Думаю, в объяснении нет необходимости)"));
+            public NameDescription humans = new NameDescription("Люди", List.of("<gray>Всякие разные люди:", "<gray>Рыцари, пираты, девушки и тд"));
+            public NameDescription humanoid = new NameDescription("Гуманоиды", List.of("<gray>Хиробрины, орки, пришельцы и тд"));
+            public NameDescription miscellaneous = new NameDescription("Разнообразное", List.of("<gray>Тут есть много всего, включая", "<gray>Флаги стран, логотипы компаний, эмоции и тд"));
+            public NameDescription monsters = new NameDescription("Монстры", List.of("<gray>Монстры, как майнкрафтовские, так и нет)"));
+            public NameDescription plants = new NameDescription("Растения", List.of("<gray>Цветочки, ягодки и другая растительность"));
+            public NameDescription other = new NameDescription("Другие головы", List.of("<gray>Категория для голов, которые", "<gray>не нашли своё место", "<gray>в других категориях"));
+            public NameDescription recent = new NameDescription("Недавно добавленное", List.of("<gray>Самые свежие головы с сайта", "<gray>minecraft-heads.com"));
+            public NameDescription favorites = new NameDescription("Избранное", List.of("<gray>Головы, помеченные вами как избранные"));
+            public NameDescription search = new NameDescription("Результаты поиска", List.of("<gray>Всё, что нашлось по вашему запросу"));
+
+            @ConfigSerializable
+            public static class NameDescription {
+                public String name;
+                public List<String> description;
+
+                NameDescription() {
+                    // For Configurate
+                }
+
+                private NameDescription(final String name, final List<String> description) {
+                    this.name = name;
+                    this.description = description;
+                }
+            }
         }
 
         @ConfigSerializable
@@ -136,7 +153,7 @@ public final class Settings {
 
             @ConfigSerializable
             public static class Help {
-                public String header = "light_blue>Heads <dark_gray>| <yellow>Доступные команды:\n<gray><i>Параметры в <> обязательны, а в [] не обязательны";
+                public String header = "<aqua>Heads <dark_gray>| <yellow>Доступные команды:\n<gray><i>Параметры в <> обязательны, а в [] не обязательны";
                 public String entry = "<dark_gray><b>*</b> <gold><usage> <gray>- <yellow><info>";
             }
 
@@ -152,7 +169,7 @@ public final class Settings {
 
                 public String info = "<i>Перезагружает конфигурацию плагина.";
                 public String usage = "/<label> reload";
-                public String success = "<green>Конфигурация плагина успешно перезагружена.";
+                public String success = "<yellow>Плагин перезагрузил конфигурацию и начал загрузку базы данных, это может занять некоторое время...";
 
                 @ConfigSerializable
                 public static class Database {
@@ -210,7 +227,8 @@ public final class Settings {
                 public TypeNameLore category = new TypeNameLore(
                         "<yellow><name>",
                         List.of(
-                                "<gray><count> голов"
+                                " ",
+                                "<gray>В этой категории <count> голов"
                         )
                 );
             }

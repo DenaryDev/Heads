@@ -35,5 +35,7 @@ public interface Category {
 
     String getName();
 
+    List<String> getDescription();
+
     Head getRandomHead();
 }
