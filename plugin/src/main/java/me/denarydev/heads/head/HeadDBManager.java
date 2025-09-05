@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-
 package me.denarydev.heads.head;
 
 import lombok.Getter;
-import me.denarydev.crystal.utils.ItemUtils;
+import me.denarydev.crystal.paper.utils.HeadUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
 import me.denarydev.heads.api.EventManager;
@@ -27,6 +26,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -36,6 +36,12 @@ import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
 public class HeadDBManager implements HeadsManager {
+
+    public static final Head DEFAULT_HEAD = new Head(CategoryID.OTHER, -1, null, null, false, Collections.emptyList());
+    private static final String[] HEAD_DATABASE_URLS = new String[]{
+        "aHR0cHM6Ly9taW5lY3JhZnQtaGVhZHMuY29tL2Nzdi8yMDIyLTAyLTI1LVpnRkRyZUhuTGlHdkhkZjNSRmZnZy9DdXN0b20tSGVhZC1EQi5jc3Y=",
+        "aHR0cHM6Ly9taW5lY3JhZnQtaGVhZHMuY29tL2Nzdi8yMDIyLTAyLTI1LVpnRkRyZUhuTGlHdkhkZjNSRmZnZy9DdXN0b20tSGVhZC1EQi0yLmNzdg=="
+    };
 
     private final HeadsPlugin plugin;
     @Getter
@@ -65,33 +71,37 @@ public class HeadDBManager implements HeadsManager {
         categoriesLoaded = 0;
 
         final Map<String, List<Head>> readContent = new TreeMap<>();
-        try {
-            plugin.logDebug("Fetching heads from website");
-            final var url = URI.create("https://minecraft-heads.4lima.de/csv/2022-02-25-ZgFDreHnLiGvHdf3RFfgg/Custom-Head-DB.csv").toURL();
-            final var connection = url.openConnection();
 
-            try (final var reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    final String[] values = line.split(";");
-                    final String category = values[0];
-                    final var head = new Head(CategoryID.getCategoryID(values[0]), Integer.parseInt(values[1]),
+        plugin.logDebug("Fetching heads from website");
+        for (final String urlHash : HEAD_DATABASE_URLS) {
+            try {
+                final var decodedUrl = new String(Base64.getUrlDecoder().decode(urlHash), StandardCharsets.UTF_8);
+                final var url = URI.create(decodedUrl).toURL();
+                final var connection = url.openConnection();
+
+                try (final var reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        final String[] values = line.split(";");
+                        final String category = values[0];
+                        final var head = new Head(CategoryID.getCategoryID(values[0]), Integer.parseInt(values[1]),
                             values[2].replace("\"", ""), values[3], Integer.parseInt(values[4]) == 1,
                             values.length == 5 ? Collections.emptyList() : List.of(values[5].replace("\"", "").toLowerCase().split("\\|"))
-                    );
+                        );
 
-                    final List<Head> heads = new ArrayList<>();
-                    if (readContent.containsKey(category))
-                        heads.addAll(readContent.get(category));
-                    heads.add(head);
-                    readContent.put(category, heads);
-                    headsLoaded++;
+                        final List<Head> heads = new ArrayList<>();
+                        if (readContent.containsKey(category))
+                            heads.addAll(readContent.get(category));
+                        heads.add(head);
+                        readContent.put(category, heads);
+                        headsLoaded++;
+                    }
                 }
+            } catch (IOException ex) {
+                plugin.getSLF4JLogger().error("Error fetching heads from website", ex);
+                if (callback != null) plugin.sync(() -> callback.accept(-1L, 0));
+                return;
             }
-        } catch (IOException ex) {
-            plugin.getSLF4JLogger().error("Error fetching heads from website", ex);
-            if (callback != null) plugin.sync(() -> callback.accept(-1L, 0));
-            return;
         }
 
         final List<Head> customHeads = new ArrayList<>();
@@ -141,12 +151,12 @@ public class HeadDBManager implements HeadsManager {
         final var foundHeads = new ArrayList<Head>();
         for (Category c : searchCategories) {
             foundHeads.addAll(c.getHeads().stream()
-                    .filter(head -> head.name().toLowerCase().contains(params.toLowerCase()))
-                    .toList());
+                .filter(head -> head.name().toLowerCase().contains(params.toLowerCase()))
+                .toList());
             if (!namesOnly) {
                 foundHeads.addAll(c.getHeads().stream()
-                        .filter(head -> head.tags().contains(params.toLowerCase()))
-                        .toList());
+                    .filter(head -> head.tags().contains(params.toLowerCase()))
+                    .toList());
             }
         }
         plugin.logDebug("Found " + foundHeads.size() + " heads");
@@ -172,7 +182,7 @@ public class HeadDBManager implements HeadsManager {
     public ItemStack getHead(int id) {
         final var category = categories.values().stream().filter(c -> c.getHead(id) != null).findFirst().orElse(null);
         if (category != null) {
-            return ItemUtils.createHead(category.getHead(id).base64());
+            return HeadUtils.createHead(category.getHead(id).base64());
         }
         return null;
     }

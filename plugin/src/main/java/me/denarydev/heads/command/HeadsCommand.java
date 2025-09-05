@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-
 package me.denarydev.heads.command;
 
 import me.denarydev.heads.HeadsPlugin;
@@ -65,8 +64,8 @@ public class HeadsCommand extends Command {
                             plugin.runAsync(() -> plugin.getHeadDBManager().loadDatabase((loadTime, loadedHeads) -> {
                                 if (loadTime > 0L) {
                                     sender.sendRichMessage(Settings.messages().commands.reload.database.success,
-                                            Placeholder.unparsed("time", String.valueOf(loadTime)),
-                                            Placeholder.unparsed("amount", String.valueOf(loadedHeads))
+                                        Placeholder.unparsed("time", String.valueOf(loadTime)),
+                                        Placeholder.unparsed("amount", String.valueOf(loadedHeads))
                                     );
                                 } else {
                                     sender.sendRichMessage(Settings.messages().commands.reload.database.failed);
@@ -123,25 +122,25 @@ public class HeadsCommand extends Command {
         if (player != null) {
             if (sender.hasPermission("heads.open")) {
                 helpLines.add(mm.deserialize(Settings.messages().commands.help.entry,
-                        Placeholder.component("usage", mm.deserialize(Settings.messages().commands.open.usage,
-                                Placeholder.unparsed("label", label))),
-                        Placeholder.parsed("info", Settings.messages().commands.open.info)
+                    Placeholder.component("usage", mm.deserialize(Settings.messages().commands.open.usage,
+                        Placeholder.unparsed("label", label))),
+                    Placeholder.parsed("info", Settings.messages().commands.open.info)
                 ));
             }
             if (sender.hasPermission("heads.search")) {
                 helpLines.add(mm.deserialize(Settings.messages().commands.help.entry,
-                        Placeholder.component("usage", mm.deserialize(Settings.messages().commands.search.usage,
-                                Placeholder.unparsed("label", label))),
-                        Placeholder.parsed("info", Settings.messages().commands.search.info)
+                    Placeholder.component("usage", mm.deserialize(Settings.messages().commands.search.usage,
+                        Placeholder.unparsed("label", label))),
+                    Placeholder.parsed("info", Settings.messages().commands.search.info)
                 ));
             }
         }
 
         if (sender.hasPermission("heads.reload")) {
             helpLines.add(mm.deserialize(Settings.messages().commands.help.entry,
-                    Placeholder.component("usage", mm.deserialize(Settings.messages().commands.reload.usage,
-                            Placeholder.unparsed("label", label))),
-                    Placeholder.parsed("info", Settings.messages().commands.reload.info)
+                Placeholder.component("usage", mm.deserialize(Settings.messages().commands.reload.usage,
+                    Placeholder.unparsed("label", label))),
+                Placeholder.parsed("info", Settings.messages().commands.reload.info)
             ));
         }
 

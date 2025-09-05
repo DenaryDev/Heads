@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-
 package me.denarydev.heads.head;
 
 import lombok.Getter;
-import me.denarydev.crystal.utils.ItemUtils;
+import me.denarydev.crystal.paper.utils.HeadUtils;
 import me.denarydev.crystal.utils.NumberUtils;
 import me.denarydev.heads.Settings;
 import me.denarydev.heads.api.head.CategoryID;
@@ -30,7 +29,7 @@ public class Category implements me.denarydev.heads.api.head.Category {
         this.id = id;
         this.heads = heads;
         final var categories = Settings.main().categories;
-        this.menuItem = ItemUtils.createHead(switch (this.id) {
+        this.menuItem = HeadUtils.createHead(switch (this.id) {
             case ALPHABET -> categories.alphabet;
             case ANIMALS -> categories.animals;
             case BLOCKS -> categories.blocks;
@@ -109,7 +108,11 @@ public class Category implements me.denarydev.heads.api.head.Category {
 
     @Override
     public me.denarydev.heads.api.head.Head getRandomHead() {
-        final var random = ThreadLocalRandom.current();
-        return heads.get(random.nextInt(0, heads.size() - 1));
+        if (!heads.isEmpty()) {
+            final var random = ThreadLocalRandom.current();
+            return heads.get(random.nextInt(0, heads.size() - 1));
+        } else {
+            return HeadDBManager.DEFAULT_HEAD;
+        }
     }
 }

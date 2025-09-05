@@ -1,6 +1,5 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import net.minecrell.pluginyml.paper.PaperPluginDescription
-import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
     id(libs.plugins.shadow.get().pluginId)
@@ -10,9 +9,9 @@ plugins {
 
 dependencies {
     compileOnly(libs.placeholderapi)
+    compileOnly(libs.crystal.paper)
 
     implementation(project(":api"))
-    implementation(libs.bundles.crystal)
 }
 
 paper {
@@ -30,6 +29,11 @@ paper {
     provides = listOf("HeadDatabase")
 
     serverDependencies {
+        create("Crystal") {
+            required = true
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+        }
+
         create("PlaceholderAPI") {
             required = false
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
@@ -51,10 +55,6 @@ paper {
     }
 }
 
-runPaper {
-    folia.registerTask()
-}
-
 tasks {
     shadowJar {
         archiveClassifier = ""
@@ -66,17 +66,10 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    withType<RunServer>().configureEach {
-        minecraftVersion("1.21.3")
+    runServer {
+        minecraftVersion("1.21.8")
         runDirectory(rootProject.projectDir.resolve("run"))
         val file = rootProject.projectDir.resolve("run/server.jar")
         if (file.exists()) serverJar(file)
-
-        if (name == "runServer") {
-            downloadPlugins {
-                url("https://download.luckperms.net/1567/bukkit/loader/LuckPerms-Bukkit-5.4.150.jar")
-                url("https://repo.extendedclip.com/content/repositories/placeholderapi/me/clip/placeholderapi/2.11.6/placeholderapi-2.11.6.jar")
-            }
-        }
     }
 }

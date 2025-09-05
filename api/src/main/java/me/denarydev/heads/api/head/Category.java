@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
@@ -7,7 +7,6 @@
  */
 package me.denarydev.heads.api.head;
 
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;

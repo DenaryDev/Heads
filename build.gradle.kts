@@ -1,5 +1,3 @@
-import com.diffplug.spotless.LineEnding
-
 plugins {
     id("java")
     alias(libs.plugins.spotless)
@@ -10,12 +8,13 @@ plugins {
 
 allprojects {
     group = "me.denarydev.heads"
-    version = "1.3.0"
+    version = "1.4.0"
 }
 
 subprojects {
     apply(plugin = "java")
     apply(plugin = rootProject.libs.plugins.spotless.get().pluginId)
+
     dependencies {
         compileOnly(rootProject.libs.paper)
         compileOnly(rootProject.libs.lombok)
@@ -24,8 +23,9 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
+            languageVersion = JavaLanguageVersion.of(21)
         }
+
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
@@ -34,26 +34,31 @@ subprojects {
         java {
             target("**/me/denarydev/heads/**")
 
+            licenseHeaderFile(rootProject.file("codestyle/copyright.txt"))
+
             trimTrailingWhitespace()
-            indentWithSpaces(4)
+            leadingTabsToSpaces(4)
             endWithNewline()
-            lineEndings = LineEnding.UNIX
         }
     }
 
     tasks {
         withType<JavaCompile>().configureEach {
             options.encoding = Charsets.UTF_8.name()
-            options.release.set(21)
+            options.release = 21
         }
+
         withType<Javadoc>().configureEach {
             options.encoding = Charsets.UTF_8.name()
         }
+
         withType<ProcessResources>().configureEach {
             filteringCharset = Charsets.UTF_8.name()
         }
 
         compileJava {
+            dependsOn("spotlessApply")
+
             options.compilerArgs.addAll(
                 listOf(
                     "-parameters",

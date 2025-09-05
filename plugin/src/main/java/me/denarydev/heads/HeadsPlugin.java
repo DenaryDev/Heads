@@ -1,17 +1,16 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-
 package me.denarydev.heads;
 
 import lombok.Getter;
+import me.denarydev.heads.api.HeadsAPIImpl;
 import me.denarydev.heads.command.HeadsCommand;
 import me.denarydev.heads.head.HeadDBManager;
-import me.denarydev.heads.api.HeadsAPIImpl;
 import me.denarydev.heads.menu.MenuManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;

@@ -1,16 +1,15 @@
 /*
- * Copyright (c) 2024 DenaryDev
+ * Copyright (c) 2025 DenaryDev
  *
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
  */
-
 package me.denarydev.heads;
 
-import me.denarydev.crystal.config.BukkitConfigs;
-import me.denarydev.crystal.config.CrystalConfigs;
-import me.denarydev.crystal.utils.ItemUtils;
+import me.denarydev.crystal.config.ConfigurateLoaders;
+import me.denarydev.crystal.paper.configurate.PaperSerializers;
+import me.denarydev.crystal.paper.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -42,11 +41,12 @@ public final class Settings {
 
     public static void load(Path path) throws ConfigurateException {
         final var serializers = TypeSerializerCollection.builder()
-                .registerAll(BukkitConfigs.serializers())
-                .build();
-        main = CrystalConfigs.loadConfig(path.resolve("config.conf"), serializers, MainConfig.class, false);
-        menus = CrystalConfigs.loadConfig(path.resolve("menus.conf"), serializers, MenusConfig.class, false);
-        messages = CrystalConfigs.loadConfig(path.resolve("messages.conf"), MessagesConfig.class, false);
+            .registerAll(PaperSerializers.get())
+            .build();
+
+        main = ConfigurateLoaders.loadConfig(path.resolve("config.conf"), serializers, MainConfig.class, false);
+        menus = ConfigurateLoaders.loadConfig(path.resolve("menus.conf"), serializers, MenusConfig.class, false);
+        messages = ConfigurateLoaders.loadConfig(path.resolve("messages.conf"), MessagesConfig.class, false);
     }
 
     @ConfigSerializable
@@ -198,22 +198,22 @@ public final class Settings {
 
             @ConfigSerializable
             public static class Items {
-                public ItemStack search = ItemUtils.itemBuilder()
-                        .type(Material.COMPASS)
-                        .displayNameRich("<yellow>Поиск")
-                        .loreRich(List.of(
-                                "<gray>Для поиска используйте:",
-                                "<gray>/heads search <название|тег>"
-                        ))
-                        .build();
-                public ItemStack back = ItemUtils.itemBuilder()
-                        .type(Material.BOOK)
-                        .displayNameRich("<red>Вернуться к категориям")
-                        .build();
-                public ItemStack background = ItemUtils.itemBuilder()
-                        .type(Material.GRAY_STAINED_GLASS_PANE)
-                        .displayName(Component.space())
-                        .build();
+                public ItemStack search = ItemBuilder.empty()
+                    .type(Material.COMPASS)
+                    .displayNameRich("<yellow>Поиск")
+                    .loreRich(List.of(
+                        "<gray>Для поиска используйте:",
+                        "<gray>/heads search <название|тег>"
+                    ))
+                    .build();
+                public ItemStack back = ItemBuilder.empty()
+                    .type(Material.BOOK)
+                    .displayNameRich("<red>Вернуться к категориям")
+                    .build();
+                public ItemStack background = ItemBuilder.empty()
+                    .type(Material.GRAY_STAINED_GLASS_PANE)
+                    .displayName(Component.space())
+                    .build();
             }
         }
 
@@ -225,11 +225,11 @@ public final class Settings {
             @ConfigSerializable
             public static class Items {
                 public TypeNameLore category = new TypeNameLore(
-                        "<yellow><name>",
-                        List.of(
-                                " ",
-                                "<gray>В этой категории <count> голов"
-                        )
+                    "<yellow><name>",
+                    List.of(
+                        " ",
+                        "<gray>В этой категории <count> голов"
+                    )
                 );
             }
         }
@@ -242,31 +242,31 @@ public final class Settings {
             @ConfigSerializable
             public static class Items {
                 public TypeNameLore head = new TypeNameLore(
-                        "<blue><name>",
-                        List.of(
-                                "<dark_gray><category>",
-                                "<dark_gray><tags>",
-                                "<dark_gray>ID: <gray><id>"
-                        )
+                    "<blue><name>",
+                    List.of(
+                        "<dark_gray><category>",
+                        "<dark_gray><tags>",
+                        "<dark_gray>ID: <gray><id>"
+                    )
                 );
                 public TypeNameLore pageUnselected = new TypeNameLore(
-                        Material.PAPER,
-                        "<gray>Страница <page>",
-                        List.of(
-                                "<dark_gray><id>"
-                        )
+                    Material.PAPER,
+                    "<gray>Страница <page>",
+                    List.of(
+                        "<dark_gray><id>"
+                    )
                 );
                 public TypeNameLore pageSelected = new TypeNameLore(
-                        Material.MAP,
-                        "<gray>Страница <page>",
-                        List.of(
-                                "<dark_gray><id>"
-                        )
+                    Material.MAP,
+                    "<gray>Страница <page>",
+                    List.of(
+                        "<dark_gray><id>"
+                    )
                 );
-                public ItemStack empty = ItemUtils.itemBuilder()
-                        .type(Material.STRUCTURE_VOID)
-                        .displayNameRich("<red>пусто")
-                        .build();
+                public ItemStack empty = ItemBuilder.empty()
+                    .type(Material.STRUCTURE_VOID)
+                    .displayNameRich("<red>пусто")
+                    .build();
             }
         }
 

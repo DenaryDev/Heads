@@ -52,7 +52,7 @@ public class HeadDatabaseAPI {
 
     public List<Head> getHeads(CategoryEnum category) {
         return HeadsPlugin.getInstance().getHeadDBManager().getCategory(CategoryID.valueOf(category.name())).getHeads()
-                .stream().map(Head::new).toList();
+            .stream().map(Head::new).toList();
     }
 
     public ItemStack getRandomHead() {

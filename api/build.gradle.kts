@@ -5,8 +5,8 @@ plugins {
 publishing {
     repositories {
         val repo = if (rootProject.version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"
-        maven("https://repo.activmine.ru/$repo/") {
-            name = "activmine"
+        maven("https://repo.prostocraft.ru/$repo/") {
+            name = "prostocraft"
             credentials(PasswordCredentials::class)
         }
     }
