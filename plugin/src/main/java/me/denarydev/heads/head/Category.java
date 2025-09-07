@@ -40,9 +40,9 @@ public class Category implements me.denarydev.heads.api.head.Category {
             case MISCELLANEOUS -> categories.miscellaneous;
             case MONSTERS -> categories.monsters;
             case PLANTS -> categories.plants;
-            case OTHER -> categories.custom;
-            case RECENT, FAVORITES -> getRandomHead().base64();
-            case SEARCH -> null;
+            case FAVORITES -> heads.isEmpty() ? categories.emptyFavorites : categories.favorites;
+            case OTHER, SEARCH -> categories.custom;
+            case RECENT -> getRandomHead().base64();
         });
     }
 
