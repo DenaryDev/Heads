@@ -14,7 +14,7 @@ import me.denarydev.heads.head.HeadDBManager;
 import me.denarydev.heads.menu.MenuManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.spongepowered.configurate.ConfigurateException;
+import io.sapphiremc.lib.configurate.ConfigurateException;
 
 public class HeadsPlugin extends JavaPlugin {
 

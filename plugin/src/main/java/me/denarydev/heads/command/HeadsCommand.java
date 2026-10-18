@@ -7,6 +7,7 @@
  */
 package me.denarydev.heads.command;
 
+import io.sapphiremc.lib.configurate.ConfigurateException;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
 import net.kyori.adventure.text.Component;
@@ -16,7 +17,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.configurate.ConfigurateException;
 
 import java.util.ArrayList;
 import java.util.List;

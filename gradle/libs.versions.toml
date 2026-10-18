@@ -1,14 +1,14 @@
 [versions]
-paper = "1.21.8-R0.1-SNAPSHOT"
-crystal = "3.0.0-SNAPSHOT"
+paper = "26.3.build.+"
+crystal = "3.2.0-SNAPSHOT"
 
-placeholderapi = "2.11.6"
-lombok = "1.18.38"
+placeholderapi = "2.12.3"
+lombok = "1.18.48"
 
-spotless = "7.2.1"
-plugin-yml = "0.8.0"
-shadow = "8.3.9"
-run-task = "2.3.1"
+spotless = "8.10.4"
+plugin-yml = "0.9.0"
+shadow = "9.6.1"
+run-task = "3.1.0"
 
 [libraries]
 paper = { module = "io.papermc.paper:paper-api", version.ref = "paper" }

@@ -7,7 +7,6 @@
  */
 package me.denarydev.heads.menu;
 
-import me.denarydev.crystal.paper.gui.InventoryListener;
 import me.denarydev.crystal.paper.gui.Menu;
 import me.denarydev.crystal.paper.gui.Template;
 import me.denarydev.crystal.paper.item.ItemBuilder;
@@ -31,11 +30,10 @@ public final class MenuManager {
 
     public MenuManager(HeadsPlugin plugin) {
         this.plugin = plugin;
-        Bukkit.getPluginManager().registerEvents(new InventoryListener(), plugin);
     }
 
     public void loadTemplates() {
-        overview = Template.builder()
+        overview = Template.simpleBuilder()
             .titleRich(Settings.menus().overview.title,
                 Placeholder.unparsed("count", NumberUtils.formatNumber(plugin.getHeadDBManager().getHeadsLoaded())))
             .size(54)
@@ -43,7 +41,7 @@ public final class MenuManager {
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53)
             .item(Settings.menus().common.items.search, 43)
             .build();
-        heads = Template.builder()
+        heads = Template.simpleBuilder()
             .size(54)
             .item(Settings.menus().common.items.back, 45)
             .item(Settings.menus().common.items.search, 53)

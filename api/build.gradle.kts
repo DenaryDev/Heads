@@ -2,17 +2,22 @@ plugins {
     id("maven-publish")
 }
 
+val repositoryProvider: Provider<String> = providers.gradleProperty("projectVersion").map { currentVersion ->
+    if (currentVersion.endsWith("-SNAPSHOT")) "snapshots" else "releases"
+}
+
 publishing {
     repositories {
-        val repo = if (rootProject.version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"
-        maven("https://repo.prostocraft.ru/$repo/") {
-            name = "prostocraft"
+        maven("https://repo.rafaelkauwu.me/${repositoryProvider.get()}/") {
+            name = "rafaelkauwu"
             credentials(PasswordCredentials::class)
         }
     }
 
-    publications.create<MavenPublication>("maven") {
-        artifactId = "heads-api"
-        from(components["java"])
+    publications {
+        register<MavenPublication>("maven") {
+            artifactId = "heads-api"
+            from(components["java"])
+        }
     }
 }

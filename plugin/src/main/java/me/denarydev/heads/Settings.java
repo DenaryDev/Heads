@@ -7,16 +7,17 @@
  */
 package me.denarydev.heads;
 
-import me.denarydev.crystal.config.ConfigurateLoaders;
+import io.sapphiremc.lib.configurate.ConfigurateException;
+import io.sapphiremc.lib.configurate.objectmapping.ConfigSerializable;
+import io.sapphiremc.lib.configurate.objectmapping.meta.Comment;
+import io.sapphiremc.lib.configurate.serialize.TypeSerializerCollection;
+import me.denarydev.crystal.config.ConfigLoaders;
+import me.denarydev.crystal.config.ConfigMapper;
 import me.denarydev.crystal.paper.configurate.PaperSerializers;
 import me.denarydev.crystal.paper.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.objectmapping.ConfigSerializable;
-import org.spongepowered.configurate.objectmapping.meta.Comment;
-import org.spongepowered.configurate.serialize.TypeSerializerCollection;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -44,9 +45,9 @@ public final class Settings {
             .registerAll(PaperSerializers.get())
             .build();
 
-        main = ConfigurateLoaders.loadConfig(path.resolve("config.conf"), serializers, MainConfig.class, false);
-        menus = ConfigurateLoaders.loadConfig(path.resolve("menus.conf"), serializers, MenusConfig.class, false);
-        messages = ConfigurateLoaders.loadConfig(path.resolve("messages.conf"), MessagesConfig.class, false);
+        main = ConfigMapper.load(ConfigLoaders.hocon(path.resolve("config.conf"), serializers), MainConfig.class, false);
+        menus = ConfigMapper.load(ConfigLoaders.hocon(path.resolve("menus.conf"), serializers), MenusConfig.class, false);
+        messages = ConfigMapper.load(ConfigLoaders.hocon(path.resolve("messages.conf")), MessagesConfig.class, false);
     }
 
     @ConfigSerializable

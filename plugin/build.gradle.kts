@@ -2,9 +2,9 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
-    id(libs.plugins.shadow.get().pluginId)
-    id(libs.plugins.runpaper.get().pluginId)
-    id(libs.plugins.pluginyml.get().pluginId)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.runpaper)
+    alias(libs.plugins.pluginyml)
 }
 
 dependencies {
@@ -16,39 +16,39 @@ dependencies {
 
 paper {
     name = rootProject.name
-    version = rootProject.version.toString()
+    version = project.version.toString()
     website = "https://github.com/DenaryDev/Heads"
     author = "DenaryDev"
 
     main = "me.denarydev.heads.HeadsPlugin"
 
-    apiVersion = "1.21"
+    apiVersion = "26.3"
 
     foliaSupported = true
 
     provides = listOf("HeadDatabase")
 
     serverDependencies {
-        create("Crystal") {
+        register("Crystal") {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
 
-        create("PlaceholderAPI") {
+        register("PlaceholderAPI") {
             required = false
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
     }
 
     permissions {
-        create("skyheads.admin") {
+        register("skyheads.admin") {
             description = "Admin permission"
             default = BukkitPluginDescription.Permission.Default.OP
             children = listOf(
                 "skyheads.user"
             )
         }
-        create("skyheads.user") {
+        register("skyheads.user") {
             description = "User permission"
             default = BukkitPluginDescription.Permission.Default.TRUE
         }
@@ -59,17 +59,14 @@ tasks {
     shadowJar {
         archiveClassifier = ""
         archiveBaseName = rootProject.name
-        destinationDirectory = rootProject.projectDir.resolve("build/libs")
-    }
-
-    build {
-        dependsOn(shadowJar)
+        destinationDirectory = layout.settingsDirectory.dir("build/libs")
     }
 
     runServer {
-        minecraftVersion("1.21.8")
-        runDirectory(rootProject.projectDir.resolve("run"))
-        val file = rootProject.projectDir.resolve("run/server.jar")
+        minecraftVersion("26.3")
+        runDirectory = layout.settingsDirectory.dir("run")
+
+        val file = layout.settingsDirectory.file("run/server.jar").asFile
         if (file.exists()) serverJar(file)
     }
 }
