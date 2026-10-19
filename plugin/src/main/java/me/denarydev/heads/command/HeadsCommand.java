@@ -134,6 +134,13 @@ public class HeadsCommand extends Command {
                     Placeholder.parsed("info", Settings.messages().commands.search.info)
                 ));
             }
+            if (sender.hasPermission(PlayerHeadCommand.PERMISSION)) {
+                helpLines.add(mm.deserialize(Settings.messages().commands.help.entry,
+                    Placeholder.component("usage", mm.deserialize(Settings.messages().commands.playerhead.usage,
+                        Placeholder.unparsed("label", "playerhead"))),
+                    Placeholder.parsed("info", Settings.messages().commands.playerhead.info)
+                ));
+            }
         }
 
         if (sender.hasPermission("heads.reload")) {

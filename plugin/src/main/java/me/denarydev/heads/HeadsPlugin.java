@@ -10,6 +10,7 @@ package me.denarydev.heads;
 import lombok.Getter;
 import me.denarydev.heads.api.HeadsAPIImpl;
 import me.denarydev.heads.command.HeadsCommand;
+import me.denarydev.heads.command.PlayerHeadCommand;
 import me.denarydev.heads.head.HeadDBManager;
 import me.denarydev.heads.menu.MenuManager;
 import org.bukkit.Bukkit;
@@ -38,8 +39,9 @@ public class HeadsPlugin extends JavaPlugin {
         this.menuManager = new MenuManager(this);
         this.headDBManager = new HeadDBManager(this);
 
-        final var command = new HeadsCommand(this);
-        Bukkit.getCommandMap().register(this.getName().toLowerCase(), command);
+        final var namespace = this.getName().toLowerCase();
+        Bukkit.getCommandMap().register(namespace, new HeadsCommand(this));
+        Bukkit.getCommandMap().register(namespace, new PlayerHeadCommand(this));
 
         try {
             Settings.load(getDataFolder().toPath());

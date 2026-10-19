@@ -77,7 +77,7 @@ public final class MenuManager {
             if (slot == 35) break;
         }
 
-        //menu.clickAction(event -> plugin.getHeadDBManager().showSearchChatPrompt(viewer, null, event.isRightClick()), 43);
+        menu.action(event -> plugin.getHeadDBManager().showSearchChatPrompt(viewer, null, event.isRightClick()), 43);
 
         menu.build().show(viewer);
     }

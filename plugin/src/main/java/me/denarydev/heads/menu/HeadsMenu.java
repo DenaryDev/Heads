@@ -205,7 +205,7 @@ public class HeadsMenu {
         }
 
         menu.action(event -> plugin.getMenuManager().openOverview(viewer), 45);
-        //menu.clickAction(event -> plugin.getHeadDBManager().showSearchChatPrompt(viewer, null, event.isRightClick()), 53);
+        menu.action(event -> plugin.getHeadDBManager().showSearchChatPrompt(viewer, null, event.isRightClick()), 53);
 
         menu.build().show(viewer);
     }

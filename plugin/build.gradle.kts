@@ -38,19 +38,46 @@ paper {
             required = false
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
+
+        register("SkinsRestorer") {
+            required = false
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+        }
     }
 
     permissions {
-        register("skyheads.admin") {
+        register("heads.open") {
+            description = "Open the heads menu"
+            default = BukkitPluginDescription.Permission.Default.FALSE
+        }
+        register("heads.search") {
+            description = "Search heads by name and tags"
+            default = BukkitPluginDescription.Permission.Default.FALSE
+        }
+        register("heads.playerhead") {
+            description = "Get a player's head by name"
+            default = BukkitPluginDescription.Permission.Default.FALSE
+        }
+        register("heads.reload") {
+            description = "Reload the plugin configuration and database"
+            default = BukkitPluginDescription.Permission.Default.FALSE
+        }
+        register("heads.user") {
+            description = "User permission"
+            default = BukkitPluginDescription.Permission.Default.TRUE
+            children = listOf(
+                "heads.open",
+                "heads.search",
+                "heads.playerhead"
+            )
+        }
+        register("heads.admin") {
             description = "Admin permission"
             default = BukkitPluginDescription.Permission.Default.OP
             children = listOf(
-                "skyheads.user"
+                "heads.user",
+                "heads.reload"
             )
-        }
-        register("skyheads.user") {
-            description = "User permission"
-            default = BukkitPluginDescription.Permission.Default.TRUE
         }
     }
 }

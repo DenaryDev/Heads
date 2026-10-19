@@ -45,25 +45,33 @@ public final class Settings {
             .registerAll(PaperSerializers.get())
             .build();
 
-        main = ConfigMapper.load(ConfigLoaders.hocon(path.resolve("config.conf"), serializers), MainConfig.class, false);
-        menus = ConfigMapper.load(ConfigLoaders.hocon(path.resolve("menus.conf"), serializers), MenusConfig.class, false);
-        messages = ConfigMapper.load(ConfigLoaders.hocon(path.resolve("messages.conf")), MessagesConfig.class, false);
+        main = ConfigMapper.load(ConfigLoaders.yaml(path.resolve("config.yml"), serializers), MainConfig.class, false);
+        menus = ConfigMapper.load(ConfigLoaders.yaml(path.resolve("menus.yml"), serializers), MenusConfig.class, false);
+        messages = ConfigMapper.load(ConfigLoaders.yaml(path.resolve("messages.yml")), MessagesConfig.class, false);
     }
 
     @ConfigSerializable
     public static class MainConfig {
         @Comment("Режим отладки")
         public boolean debug = false;
-        @Comment("Язык сообщений плагина")
-        public String language = "ru_ru";
         @Comment("Текстуры иконок категорий")
         public Categories categories = new Categories();
         @Comment("Отдельное право для каждой категории")
         public boolean perCategoryPermissions = false;
         @Comment("Отправлять ли сообщение о начале поиска")
         public boolean searchingMessage = true;
+        @Comment("Поиск через чат по кнопке в меню")
+        public Search search = new Search();
         @Comment("Скрывать ли в главком меню категории, в которых нет голов")
         public boolean showEmptyCategories = false;
+
+        @ConfigSerializable
+        public static class Search {
+            @Comment("Слово, которое отменяет поиск")
+            public String cancelWord = "отмена";
+            @Comment("Сколько секунд ждать запрос, после чего поиск отменяется")
+            public int promptTimeout = 60;
+        }
 
         @ConfigSerializable
         public static class Categories {
@@ -96,7 +104,7 @@ public final class Settings {
 
             @ConfigSerializable
             public static class Search {
-                public String input = "<i>Введите поисковой запрос или /cancel для отмены.";
+                public String input = "<i>Введите поисковой запрос в чат или напишите <cancel> для отмены.";
                 public String searching = "<gray><i>Выполняю поиск по '<args>'...";
                 public String cancelled = "<gray><i>Поиск отменён.";
             }
@@ -151,6 +159,7 @@ public final class Settings {
             public Open open = new Open();
             public Reload reload = new Reload();
             public Search search = new Search();
+            public PlayerHead playerhead = new PlayerHead();
 
             @ConfigSerializable
             public static class Help {
@@ -184,6 +193,16 @@ public final class Settings {
                 public String info = "<i>Ищет головы по названию и тегам.";
                 public String usage = "/<label> search <название|тег>";
             }
+
+            @ConfigSerializable
+            public static class PlayerHead {
+                public String info = "<i>Выдаёт голову игрока: свою или по нику.";
+                public String usage = "/<label> [ник]";
+                public String notFound = "<red>Не удалось найти скин игрока <name>!";
+                public String success = "<green>Вы получили голову игрока <name>.";
+                @Comment("Название предмета")
+                public String itemName = "<yellow>Голова <name>";
+            }
         }
     }
 
@@ -203,8 +222,9 @@ public final class Settings {
                     .type(Material.COMPASS)
                     .displayNameRich("<yellow>Поиск")
                     .loreRich(List.of(
-                        "<gray>Для поиска используйте:",
-                        "<gray>/heads search <название|тег>"
+                        "<gray>ЛКМ - поиск по названию и тегам",
+                        "<gray>ПКМ - поиск только по названию",
+                        "<gray>Или команда: /heads search <название|тег>"
                     ))
                     .build();
                 public ItemStack back = ItemBuilder.empty()

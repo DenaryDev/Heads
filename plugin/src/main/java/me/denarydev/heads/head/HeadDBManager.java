@@ -8,6 +8,8 @@
 package me.denarydev.heads.head;
 
 import lombok.Getter;
+import me.denarydev.crystal.paper.input.ChatPrompt;
+import me.denarydev.crystal.paper.input.CloseReason;
 import me.denarydev.crystal.paper.utils.HeadUtils;
 import me.denarydev.heads.HeadsPlugin;
 import me.denarydev.heads.Settings;
@@ -19,6 +21,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -135,11 +138,23 @@ public class HeadDBManager implements HeadsManager {
         plugin.sync(plugin.getMenuManager()::loadTemplates);
     }
 
-    /*public void showSearchChatPrompt(Player player, Category category, boolean namesOnly) {
-        ChatPrompt.showPrompt(plugin, player, plugin.getLocale().getMessage(player, "general.search.input").asString(), (event ->
-                doSearch(player, category, event.getMessage(), namesOnly))).setOnCancel(() -> plugin.getLocale().getMessage(player, "general.search.cancelled").send(player)
-        );
-    }*/
+    public void showSearchChatPrompt(Player player, @Nullable Category category, boolean namesOnly) {
+        final var cancelWord = Settings.main().search.cancelWord;
+
+        player.closeInventory();
+        player.sendRichMessage(Settings.messages().general.search.input, Placeholder.unparsed("cancel", cancelWord));
+
+        ChatPrompt.show(plugin, player, message ->
+                // The answer arrives on the chat thread, search and menus must run on the player's thread
+                player.getScheduler().run(plugin, task -> doSearch(player, category, message, namesOnly), null))
+            .cancelWord(cancelWord)
+            .closeAction(reason -> {
+                if (reason == CloseReason.CANCELLED || reason == CloseReason.TIMEOUT) {
+                    player.sendRichMessage(Settings.messages().general.search.cancelled);
+                }
+            })
+            .timeout(Settings.main().search.promptTimeout * 20L);
+    }
 
     public void doSearch(Player player, Category category, String params, boolean namesOnly) {
         if (Settings.main().searchingMessage) {
